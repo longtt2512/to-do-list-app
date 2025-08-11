@@ -1,132 +1,106 @@
-📌 Tên dự án
-Ứng dụng Quản lý Công việc – Todo List Web App
+# 📌 Ứng dụng Quản lý Công việc – Todo List Web App
 
-🎯 Mục tiêu dự án
-Xây dựng một ứng dụng web hỗ trợ người dùng quản lý công việc cá nhân đơn giản, hiệu quả và trực quan.
+## 🎯 Mục tiêu
+Dự án nhằm xây dựng một ứng dụng web giúp người dùng quản lý công việc cá nhân một cách **đơn giản và hiệu quả**.  
 Ứng dụng cho phép:
+- Tạo, chỉnh sửa, xóa, tìm kiếm và phân loại công việc.
+- Lưu trữ dữ liệu để người dùng có thể truy cập lại khi cần.
 
-Tạo, chỉnh sửa, xóa, tìm kiếm, phân loại công việc.
+---
 
-Lưu trữ dữ liệu để truy cập lại bất cứ lúc nào.
+## ⚙️ Chức năng chính
 
-Thống kê tiến độ và hiệu suất làm việc.
+### 1. Quản lý tài khoản
+#### 📝 Đăng ký (Register)
+- Form: **Họ tên, Email, Mật khẩu, Xác nhận mật khẩu, Số điện thoại**.
+- Nút **Tạo tài khoản mới**.
+- Kiểm tra dữ liệu bằng **JavaScript**.
 
-🚀 Chức năng chính
-1. Quản lý tài khoản
-Đăng ký (Register)
+#### 🔑 Đăng nhập (Login)
+- Email + mật khẩu.
+- Hỗ trợ đăng nhập bằng **Google** / **Facebook**.
 
-Form: Họ tên, Email, Mật khẩu, Xác nhận mật khẩu, Số điện thoại.
+#### 🔄 Đổi mật khẩu (Change Password)
+- Nhập **mật khẩu cũ**, **mật khẩu mới**, **xác nhận mật khẩu mới**.
+- Kiểm tra dữ liệu hợp lệ.
 
-Nút Tạo tài khoản mới, kiểm tra dữ liệu bằng JavaScript.
+#### 👤 Thông tin tài khoản (Account Info)
+- Xem & chỉnh sửa thông tin cá nhân (**tên, email, số điện thoại, ảnh đại diện**).
+- Lưu thông tin vào file bằng **Java I/O**.
 
-Đăng nhập (Login)
+---
 
-Email + mật khẩu.
+### 2. Quản lý công việc
+#### 📊 Bảng điều khiển (Dashboard)
+- Chào mừng người dùng.
+- Thống kê nhanh: **số lượng công việc, tỉ lệ hoàn thành, biểu đồ tiến độ**.
+- Danh sách công việc **quan trọng** hoặc **gần hết hạn**.
 
-Tùy chọn đăng nhập bằng Google / Facebook.
+#### 📋 Danh sách công việc (My Task)
+- Hiển thị danh sách task.
+- Lọc hoặc sắp xếp theo **trạng thái / danh mục / ngày**.
 
-Đổi mật khẩu (Change Password)
+#### ➕ Thêm công việc (Add Task)
+- Form: **Tên task, Mô tả, Ngày hết hạn, Danh mục, File đính kèm**.
+- Kiểm tra dữ liệu nhập.
+- Lưu vào file bằng **Java I/O**.
 
-Nhập mật khẩu cũ, mật khẩu mới, xác nhận mật khẩu mới.
+#### 🔍 Xem chi tiết công việc (View Task)
+- Toàn bộ nội dung, file/ảnh đính kèm, trạng thái.
 
-Validate dữ liệu trước khi lưu.
+#### 📌 Vitals
+- Hiển thị thông tin quan trọng hoặc tổng hợp nhanh.
 
-Thông tin tài khoản (Account Info)
+---
 
-Xem & chỉnh sửa thông tin cá nhân (Tên, Email, SĐT, ảnh đại diện).
+### 3. Quản lý danh mục công việc
+#### 📂 Danh sách danh mục (Task Categories)
+- Hiển thị bảng danh mục hiện có, số task trong mỗi danh mục.
+- Nút **Sửa / Xóa** danh mục.
 
-Lưu vào file bằng Java I/O.
+#### 🆕 Tạo danh mục mới (Create Categories)
+- Form nhập tên danh mục.
+- Lưu vào file dữ liệu.
 
-2. Quản lý công việc
-Bảng điều khiển (Dashboard)
+---
 
-Chào mừng người dùng.
+### 4. Giới thiệu nhóm
+Trang giới thiệu thành viên gồm:
+- Họ tên
+- Ngày sinh
+- Mã sinh viên
+- Tên lớp
+- Số điện thoại
+- Email
+- Đơn vị công tác hiện tại + link đến website
+- Ảnh cá nhân (click để phóng to)  
+📂 **Dữ liệu đọc từ file (Java I/O)** để luyện phần backend.
 
-Thống kê nhanh: số lượng công việc, tỉ lệ hoàn thành, biểu đồ tiến độ.
+---
 
-Danh sách công việc quan trọng hoặc gần hết hạn.
+### 5. Chức năng giao diện
+- **Sidebar Menu**: Dashboard, My Task, Categories, Account, Change Password, About Group, Logout.
+- **Header**: Avatar người dùng, icon thông báo, icon cài đặt.
+- **Popup Modal** khi thêm/sửa task hoặc danh mục.
 
-Danh sách công việc (My Task)
+---
 
-Hiển thị toàn bộ task.
+## 🛠 Công nghệ sử dụng
+- **Frontend**: Vue 3, Vite, TailwindCSS.
+- **Lưu trữ tạm thời**: `localStorage` (phiên bản demo).
+- **Backend (dự kiến)**: Java với Java I/O để đọc/ghi dữ liệu.
 
-Lọc/sắp xếp theo trạng thái, danh mục, ngày.
+---
 
-Thêm công việc (Add Task)
-
-Form: Tên task, Mô tả, Ngày hết hạn, Danh mục, File đính kèm.
-
-Kiểm tra dữ liệu nhập, lưu vào file (Java I/O).
-
-Xem chi tiết công việc (View Task)
-
-Hiển thị toàn bộ nội dung, trạng thái, file/ảnh đính kèm.
-
-Vitals
-
-Thông tin tổng hợp nhanh.
-
-3. Quản lý danh mục công việc
-Danh sách danh mục
-
-Bảng danh mục + số lượng task trong từng danh mục.
-
-Chức năng sửa / xóa danh mục.
-
-Tạo danh mục mới
-
-Form nhập tên danh mục.
-
-Lưu dữ liệu vào file.
-
-4. Giới thiệu nhóm (Theo yêu cầu bài tập)
-Thông tin thành viên:
-
-Họ tên
-
-Ngày sinh
-
-Mã sinh viên
-
-Tên lớp
-
-Số điện thoại
-
-Email
-
-Đơn vị công tác + link website
-
-Ảnh cá nhân (click phóng to)
-
-Hiển thị dạng card hoặc bảng.
-
-Dữ liệu đọc từ file (Java I/O).
-
-5. Chức năng giao diện
-Sidebar Menu: Dashboard, My Task, Categories, Account, Change Password, About Group, Logout.
-
-Header: Avatar người dùng, thông báo, cài đặt.
-
-Popup Modal khi thêm/sửa task hoặc danh mục.
-
-🛠️ Công nghệ sử dụng
-Frontend: Vue 3, Vite, TailwindCSS
-
-Lưu trữ tạm: localStorage (phiên bản demo)
-
-Backend (dự kiến): Java với Java I/O để đọc/ghi dữ liệu
-
-📂 Cấu trúc dự án
-css
-Copy
-Edit
-todo-list-app/
-│── public/
+## 📦 Cấu trúc thư mục dự kiến
+```plaintext
+todo-app/
 │── src/
-│   ├── assets/          # Ảnh, icon, style tĩnh
-│   ├── components/      # Component tái sử dụng (Sidebar, Header, Modal…)
-│   ├── pages/           # Các trang chính (Dashboard.vue, MyTask.vue…)
+│   ├── components/
+│   ├── pages/
+│   ├── assets/
 │   ├── App.vue
-│   └── main.js
+│   ├── main.js
+│── public/
 │── package.json
 │── README.md
