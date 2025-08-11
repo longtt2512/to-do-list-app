@@ -1,0 +1,54 @@
+version: "3.9"
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: appdb
+      POSTGRES_USER: appuser
+      POSTGRES_PASSWORD: secretpassword
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  # Optional: Web UI for Postgres
+  # Access at http://localhost:5050 (email: admin@local, password: admin)
+  pgadmin:
+    image: dpage/pgadmin4:8
+    container_name: pgadmin
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@local
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "5050:80"
+
+  # Optional: your Spring Boot app (uncomment when you have a Dockerfile)
+  # app:
+  #   build: .
+  #   container_name: spring-app
+  #   restart: unless-stopped
+  #   depends_on:
+  #     postgres:
+  #       condition: service_healthy
+  #   environment:
+  #     SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/appdb
+  #     SPRING_DATASOURCE_USERNAME: appuser
+  #     SPRING_DATASOURCE_PASSWORD: secretpassword
+  #     SPRING_JPA_HIBERNATE_DDL_AUTO: validate
+  #   ports:
+  #     - "8080:8080"
+
+volumes:
+  pgdata:
