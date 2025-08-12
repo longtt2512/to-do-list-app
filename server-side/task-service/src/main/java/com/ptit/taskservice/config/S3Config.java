@@ -36,6 +36,7 @@ public class S3Config {
             AwsBasicCredentials.create(accessKey, secretKey)))
         .region(Region.of(region))
         .serviceConfiguration(S3Configuration.builder()
+            .pathStyleAccessEnabled(true)
             .build())
         .build();
   }

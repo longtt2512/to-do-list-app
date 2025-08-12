@@ -2,6 +2,7 @@ package com.ptit.taskservice.service;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.core.ResponseBytes;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
@@ -9,11 +10,14 @@ import software.amazon.awssdk.services.s3.model.*;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 import software.amazon.awssdk.services.s3.presigner.model.*;
 
+import java.io.IOException;
 import java.net.URI;
 import java.time.Duration;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
+import java.util.UUID;
+
 /**
  * @author long.truong
  */
@@ -51,6 +55,17 @@ public class S3FileService implements FileService {
     putObject(bucket, key, RequestBody.fromInputStream(stream, contentLength), contentLength, contentType, metadata);
   }
 
+  @Override
+  public void upload(MultipartFile file, String key) throws IOException {
+    PutObjectRequest request = PutObjectRequest.builder()
+        .bucket(defaultBucket)
+        .key(key)
+        .contentType(file.getContentType())
+        .build();
+
+    s3.putObject(request, RequestBody.fromBytes(file.getBytes()));
+  }
+
   private void putObject(String bucket, String key, RequestBody body, long contentLength,
                          String contentType, Map<String,String> metadata) {
     String ct = (contentType == null || contentType.isBlank()) ? "application/octet-stream" : contentType;
@@ -64,6 +79,7 @@ public class S3FileService implements FileService {
         .build();
 
     s3.putObject(req, body);
+
   }
 
   /* ================= Download ================= */

@@ -1,6 +1,9 @@
 package com.ptit.taskservice.service;
 
 
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 import java.net.URI;
 import java.time.Duration;
 import java.util.Map;
@@ -9,6 +12,7 @@ import java.util.Map;
  * @author long.truong
  */
 public interface FileService {
+  void upload(MultipartFile file, String key) throws IOException;
   void upload(String bucket, String key, byte[] data, String contentType, Map<String, String> metadata);
 
   void upload(String bucket, String key, java.io.InputStream stream, long contentLength, String contentType, Map<String, String> metadata);

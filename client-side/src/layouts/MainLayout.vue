@@ -3,7 +3,7 @@
     <Sidebar class="hidden md:block" />
     <div class="flex-1 min-h-screen md:ml-64">
       <Header />
-      <main class="p-6">
+      <main class="p-6 h-[calc(100vh-84px)]">
         <router-view />
       </main>
     </div>

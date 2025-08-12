@@ -1,0 +1,43 @@
+{
+  "aboutUs": {
+    "appTitle": "Project To-Do",
+    "backToApp": "Back to App",
+    "pageTitle": "About Our Team",
+    "subtitle": "Meet the passionate developers behind this innovative to-do list application. We are dedicated students working together to create amazing digital experiences that help people organize their lives more effectively.",
+    "teamMembersTitle": "Our Team Members",
+    "teamMembersSubtitle": "Each member brings unique skills and perspectives to make this project successful",
+    "loadingMessage": "Loading team members...",
+    "errorTitle": "Failed to load team members",
+    "tryAgainButton": "Try Again",
+    "fields": {
+      "studentCode": "Student Code",
+      "class": "Class",
+      "dateOfBirth": "Date of Birth",
+      "phone": "Phone",
+      "email": "Email",
+      "company": "Company"
+    },
+    "mission": {
+      "title": "Our Mission",
+      "description": "Our diverse team brings together different perspectives, skills, and experiences to create innovative solutions. We believe in collaboration, continuous learning, and delivering high-quality software that makes a real difference in people's daily lives.",
+      "values": {
+        "collaboration": {
+          "title": "Collaboration",
+          "description": "Working together to achieve common goals"
+        },
+        "innovation": {
+          "title": "Innovation",
+          "description": "Creating cutting-edge solutions"
+        },
+        "quality": {
+          "title": "Quality",
+          "description": "Delivering excellence in every project"
+        }
+      }
+    },
+    "footer": {
+      "copyright": "© 2024 Project To-Do Team. Built with passion and dedication.",
+      "returnLink": "← Return to Application"
+    }
+  }
+}

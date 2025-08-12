@@ -31,7 +31,7 @@ services:
       - "9000:9000"  # S3 API
       - "9001:9001"  # Web console
     volumes:
-      - ./data/minio:/data
+      - /tmp/data/minio:/data
     healthcheck:
       test: ["CMD-SHELL", "curl -fsSL http://localhost:9000/minio/health/live || exit 1"]
       interval: 10s
