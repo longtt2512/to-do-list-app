@@ -1,22 +1,23 @@
 package com.ptit.taskservice.entity;
 
-
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.OrderBy;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,30 +27,37 @@ import java.util.UUID;
  */
 
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
-@Table(name = "task_categories")
+@Table(name = "tasks")
 @EntityListeners(AuditingEntityListener.class)
-public class TaskCategory {
-
+public class Task {
   @Id
-  @Column(columnDefinition = "uuid", nullable = false, updatable = false)
+  @Column(columnDefinition = "uuid", updatable = false, nullable = false)
   private UUID id;
 
   @PrePersist void pre() { if (id == null) id = UUID.randomUUID(); }
 
-  @Column(name = "category_name", nullable = false, unique = true, length = 150)
-  private String categoryName;
+  @Column(nullable = false, length = 200)
+  private String title;
 
-  @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
-  @OrderBy("sortOrder ASC, id ASC") // ensure stable order
-  private List<TaskCategoryValue> values = new ArrayList<>();
+  @Column(name = "start_date")
+  private LocalDate startDate;
 
-  @CreatedDate
-  @Column(name = "created_at", nullable = false, updatable = false)
+  @Column(columnDefinition = "text")
+  private String description;
+
+  @Column(name = "image_key", length = 512)
+  private String imageKey; // MinIO object key
+
+  @OneToMany(mappedBy = "task", cascade = CascadeType.ALL, orphanRemoval = true)
+  private List<TaskCategorySelection> selections = new ArrayList<>();
+
+  @CreatedDate @Column(name = "created_at", updatable = false, nullable = false)
   private LocalDateTime createdAt;
 
-  @LastModifiedDate
-  @Column(name = "updated_at", nullable = false)
+  @LastModifiedDate @Column(name = "updated_at", nullable = false)
   private LocalDateTime updatedAt;
 
   @CreatedBy

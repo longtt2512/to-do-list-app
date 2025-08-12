@@ -12,7 +12,6 @@ CREATE TABLE IF NOT EXISTS task_category_values (
     category_id  UUID NOT NULL REFERENCES task_categories(id) ON DELETE CASCADE,
     value        VARCHAR(150) NOT NULL,
     sort_order   INT NOT NULL,  -- position for UI
-
     created_at   TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at   TIMESTAMPTZ NOT NULL DEFAULT NOW()
     );

@@ -1,6 +1,5 @@
 package com.ptit.taskservice.entity;
 
-
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -12,7 +11,9 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.UUID;
+/**
 /**
  * @author long.truong
  */
@@ -22,38 +23,37 @@ import java.util.UUID;
 @NoArgsConstructor
 @Entity
 @Table(
-    name = "task_category_values",
+    name = "task_category_selections",
     uniqueConstraints = {
-        @UniqueConstraint(name = "uq_cat_value", columnNames = {"category_id", "value"}),
-        @UniqueConstraint(name = "uq_cat_order", columnNames = {"category_id", "sort_order"})
+        @UniqueConstraint(name = "uq_task_value", columnNames = {"task_id", "value_id"})
     }
 )
 @EntityListeners(AuditingEntityListener.class)
-public class TaskCategoryValue {
+public class TaskCategorySelection {
 
   @Id
-  @Column(columnDefinition = "uuid", nullable = false, updatable = false)
+  @Column(columnDefinition = "uuid", updatable = false, nullable = false)
   private UUID id;
 
   @PrePersist void pre() { if (id == null) id = UUID.randomUUID(); }
 
   @ManyToOne(fetch = FetchType.LAZY, optional = false)
-  @JoinColumn(name = "category_id", nullable = false)
+  @JoinColumn(name = "task_id")
+  private Task task;
+
+  @ManyToOne(fetch = FetchType.LAZY, optional = false)
+  @JoinColumn(name = "category_id")
   private TaskCategory category;
 
-  @Column(name = "value", nullable = false, length = 150)
-  private String value;
+  @ManyToOne(fetch = FetchType.LAZY, optional = false)
+  @JoinColumn(name = "value_id")
+  private TaskCategoryValue value;
 
-  @Column(name = "sort_order", nullable = false)
-  private int sortOrder;
+  @CreatedDate @Column(name = "created_at", updatable = false, nullable = false)
+  private LocalDateTime createdAt;
 
-  @CreatedDate
-  @Column(name = "created_at", nullable = false, updatable = false)
-  private Instant createdAt;
-
-  @LastModifiedDate
-  @Column(name = "updated_at", nullable = false)
-  private Instant updatedAt;
+  @LastModifiedDate @Column(name = "updated_at", nullable = false)
+  private LocalDateTime updatedAt;
 
   @CreatedBy
   @Column(name = "created_by", nullable = false, length = 100)
