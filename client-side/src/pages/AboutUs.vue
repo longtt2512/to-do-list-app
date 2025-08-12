@@ -40,43 +40,66 @@
           </p>
         </div>
 
+        <!-- Loading State -->
+        <div v-if="loading" class="flex justify-center items-center py-20">
+          <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-[#FF6767]"></div>
+          <span class="ml-3 text-gray-600">Loading team members...</span>
+        </div>
+
+        <!-- Error State -->
+        <div v-else-if="error" class="text-center py-20">
+          <div class="text-red-500 mb-4">
+            <svg class="w-16 h-16 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.96-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+            </svg>
+            <h3 class="text-xl font-semibold mb-2">Failed to load team members</h3>
+            <p class="text-gray-600 mb-4">{{ error }}</p>
+            <button 
+              @click="fetchMembers" 
+              class="px-4 py-2 bg-[#FF6767] text-white rounded-lg hover:bg-red-500 transition-colors"
+            >
+              Try Again
+            </button>
+          </div>
+        </div>
+
         <!-- Team Grid -->
-        <div class="flex flex-wrap justify-center gap-10 max-w-6xl mx-auto">
+        <div v-else class="flex flex-wrap justify-center gap-10 max-w-6xl mx-auto">
           <div 
             v-for="member in members" 
-            :key="member.studentCode" 
+            :key="member.id" 
             class="group bg-white rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-3 border border-gray-50 overflow-hidden w-full sm:w-80 md:w-72 lg:w-80"
           >
             <!-- Photo Section with Gradient Border -->
             <div class="relative bg-gradient-to-br from-[#FF6767] to-red-400 p-2 m-4 rounded-2xl">
               <div class="bg-white rounded-xl p-6 text-center">
                 <img 
-                  :src="member.photo" 
-                  :alt="member.fullName"
+                  :src="member.avatarUrl" 
+                  :alt="member.name"
                   class="w-28 h-28 mx-auto rounded-full object-cover shadow-lg cursor-pointer border-4 border-white group-hover:scale-105 transition-transform duration-300"
-                  @click="openModal(member.photo)"
+                  @click="openModal(member.avatarUrl)"
                 />
               </div>
             </div>
 
             <!-- Content Section -->
             <div class="px-6 pb-8 space-y-4">
-              <h3 class="text-xl font-bold text-gray-800 text-center mb-6">{{ member.fullName }}</h3>
+              <h3 class="text-xl font-bold text-gray-800 text-center mb-6">{{ member.name }}</h3>
               
               <div class="space-y-3 text-sm">
                 <div class="flex items-center justify-between py-2 border-b border-gray-100">
                   <span class="text-gray-500 font-medium min-w-[100px]">Student Code:</span>
-                  <span class="text-[#FF6767] font-bold text-right">{{ member.studentCode }}</span>
+                  <span class="text-[#FF6767] font-bold text-right">{{ member.code }}</span>
+                </div>
+                
+                <div class="flex items-center justify-between py-2 border-b border-gray-100">
+                  <span class="text-gray-500 font-medium min-w-[100px]">Class:</span>
+                  <span class="text-gray-700 font-medium text-right">{{ member.className }}</span>
                 </div>
                 
                 <div class="flex items-center justify-between py-2 border-b border-gray-100">
                   <span class="text-gray-500 font-medium min-w-[100px]">Date of Birth:</span>
                   <span class="text-gray-700 font-medium text-right">{{ formatDate(member.dob) }}</span>
-                </div>
-                
-                <div class="flex items-center justify-between py-2 border-b border-gray-100">
-                  <span class="text-gray-500 font-medium min-w-[100px]">Class:</span>
-                  <span class="text-gray-700 font-medium text-right">{{ member.class }}</span>
                 </div>
                 
                 <div class="flex items-center justify-between py-2 border-b border-gray-100">
@@ -91,7 +114,7 @@
                 
                 <div class="flex items-center justify-between py-2 border-b border-gray-100">
                   <span class="text-gray-500 font-medium min-w-[100px]">Company:</span>
-                  <span class="text-gray-700 font-medium text-right break-words">{{ member.companyName }}</span>
+                  <span class="text-gray-700 font-medium text-right break-words">{{ member.company?.name || 'N/A' }}</span>
                 </div>
               </div>
             </div>
@@ -171,70 +194,41 @@ export default {
   data() {
     return {
       modalImageSrc: null,
-      members: [
-        {
-          fullName: 'Nguyen Van An',
-          dob: '2001-01-15',
-          studentCode: 'B20DCCN001',
-          class: 'D20CQCN01-N',
-          phone: '0123456789',
-          email: 'an.nguyen@example.com',
-          companyName: 'Tech Solutions',
-          companyUrl: 'https://techsolutions.com',
-          photo: '/src/assets/avatar1.png'
-        },
-        {
-          fullName: 'Tran Thi Binh',
-          dob: '2001-03-22',
-          studentCode: 'B20DCCN002',
-          class: 'D20CQCN01-N',
-          phone: '0987654321',
-          email: 'binh.tran@example.com',
-          companyName: 'Digital Innovation',
-          companyUrl: 'https://digitalinnovation.com',
-          photo: '/src/assets/avatar2.png'
-        },
-        {
-          fullName: 'Le Van Cuong',
-          dob: '2001-07-08',
-          studentCode: 'B20DCCN003',
-          class: 'D20CQCN01-N',
-          phone: '0912345678',
-          email: 'cuong.le@example.com',
-          companyName: 'Smart Systems',
-          companyUrl: 'https://smartsystems.com',
-          photo: '/src/assets/avatar3.png'
-        },
-        {
-          fullName: 'Pham Thi Dung',
-          dob: '2001-11-30',
-          studentCode: 'B20DCCN004',
-          class: 'D20CQCN01-N',
-          phone: '0856789123',
-          email: 'dung.pham@example.com',
-          companyName: 'Future Tech',
-          companyUrl: 'https://futuretech.com',
-          photo: '/src/assets/avatar1.png'
-        },
-        {
-          fullName: 'Hoang Van Esc',
-          dob: '2001-05-12',
-          studentCode: 'B20DCCN005',
-          class: 'D20CQCN01-N',
-          phone: '0734567890',
-          email: 'esc.hoang@example.com',
-          companyName: 'Code Craft',
-          companyUrl: 'https://codecraft.com',
-          photo: '/src/assets/avatar2.png'
-        }
-      ]
+      members: [],
+      loading: false,
+      error: null
     }
   },
+  async mounted() {
+    await this.fetchMembers()
+  },
   methods: {
+    async fetchMembers() {
+      this.loading = true
+      this.error = null
+      
+      try {
+        const response = await fetch('http://localhost:8081/api/members')
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`)
+        }
+        
+        const data = await response.json()
+        this.members = data
+        
+      } catch (error) {
+        console.error('Failed to fetch members:', error)
+        this.error = error.message || 'Failed to load team members. Please check your internet connection.'
+      } finally {
+        this.loading = false
+      }
+    },
     openModal(imageSrc) {
       this.modalImageSrc = imageSrc
     },
     formatDate(dateString) {
+      if (!dateString) return 'N/A'
       const options = { year: 'numeric', month: 'short', day: 'numeric' }
       return new Date(dateString).toLocaleDateString('en-US', options)
     }
