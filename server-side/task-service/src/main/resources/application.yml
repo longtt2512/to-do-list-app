@@ -39,3 +39,13 @@ logging:
     org.springframework.security: DEBUG
 
 
+minio:
+  endpoint: http://localhost:9000
+  access-key: minio
+  secret-key: miniosecret123
+  region: us-east-1
+  default-bucket: app-bucket
+  presign:
+    expiry: PT55M
+
+
