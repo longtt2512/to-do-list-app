@@ -1,0 +1,54 @@
+name: Build & Deploy Java App
+
+on:
+  push:
+    branches: ["main"]
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Checkout code
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # 2. Setup Java 17 (Temurin)
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      # 3. Build JAR with Gradle (skip tests)
+      - name: Build JAR
+        working-directory: server-side/task-service
+        run: ./gradlew clean build -x test
+
+      # 4. Log in to GHCR
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: dodt1306
+          password: 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
+
+      # 5. Build & Push Docker image (multi-arch)
+      - name: Build & Push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./server-side/task-service
+          file: ./server-side/task-service/Dockerfile
+          push: true
+          tags: ghcr.io/dodt1306/to-do-list-app:latest
+          platforms: linux/arm64
+
+      # 6. Deploy to remote server via SSH
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          script: |
+            sudo /home/deploy/deploy.sh
