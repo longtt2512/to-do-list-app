@@ -7,7 +7,7 @@ import AddTask from '../pages/AddTask.vue'
 import ViewTask from '../pages/ViewTask.vue'
 import Categories from '../pages/Categories.vue'
 import Account from '../pages/Account.vue'
-import Team from '../pages/Team.vue'
+import AboutUs from '../pages/AboutUs.vue'
 import Login from '../pages/Login.vue'
 import Register from '../pages/Register.vue'
 
@@ -22,7 +22,6 @@ const routes = [
       { path: '/tasks/:id', component: ViewTask, props: true },
       { path: '/categories', component: Categories },
       { path: '/account', component: Account },
-      { path: '/team', component: Team }
     ]
   },
   {
@@ -38,6 +37,10 @@ const routes = [
     children: [
       { path: '', component: Register }
     ]
+  },
+  {
+    path: '/about',
+    component: AboutUs
   },
   {
     path: '/:pathMatch(.*)*',
