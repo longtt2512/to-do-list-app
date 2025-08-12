@@ -1,0 +1,43 @@
+{
+  "aboutUs": {
+    "appTitle": "Dự Án To-Do",
+    "backToApp": "Quay Lại Ứng Dụng",
+    "pageTitle": "Về Nhóm Của Chúng Tôi",
+    "subtitle": "Gặp gỡ những nhà phát triển đam mê đằng sau ứng dụng danh sách công việc sáng tạo này. Chúng tôi là những sinh viên tận tâm làm việc cùng nhau để tạo ra những trải nghiệm số tuyệt vời giúp mọi người sắp xếp cuộc sống hiệu quả hơn.",
+    "teamMembersTitle": "Thành Viên Nhóm",
+    "teamMembersSubtitle": "Mỗi thành viên đều mang đến những kỹ năng và góc nhìn độc đáo để dự án thành công",
+    "loadingMessage": "Đang tải thông tin thành viên...",
+    "errorTitle": "Không thể tải thông tin thành viên",
+    "tryAgainButton": "Thử Lại",
+    "fields": {
+      "studentCode": "Mã Sinh Viên",
+      "class": "Lớp",
+      "dateOfBirth": "Ngày Sinh",
+      "phone": "Số Điện Thoại",
+      "email": "Email",
+      "company": "Công Ty"
+    },
+    "mission": {
+      "title": "Sứ Mệnh Của Chúng Tôi",
+      "description": "Nhóm đa dạng của chúng tôi kết hợp các quan điểm, kỹ năng và kinh nghiệm khác nhau để tạo ra các giải pháp sáng tạo. Chúng tôi tin vào sự hợp tác, học tập liên tục và cung cấp phần mềm chất lượng cao tạo ra sự khác biệt thực sự trong cuộc sống hàng ngày của mọi người.",
+      "values": {
+        "collaboration": {
+          "title": "Hợp Tác",
+          "description": "Làm việc cùng nhau để đạt được mục tiêu chung"
+        },
+        "innovation": {
+          "title": "Sáng Tạo",
+          "description": "Tạo ra những giải pháp tiên tiến"
+        },
+        "quality": {
+          "title": "Chất Lượng",
+          "description": "Mang lại sự xuất sắc trong mọi dự án"
+        }
+      }
+    },
+    "footer": {
+      "copyright": "© 2024 Nhóm Dự Án To-Do. Được xây dựng với đam mê và tận tâm.",
+      "returnLink": "← Quay Về Ứng Dụng"
+    }
+  }
+}
