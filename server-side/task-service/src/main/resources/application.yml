@@ -25,3 +25,17 @@ spring:
     locations: classpath:db/migration
     baseline-on-migrate: true
     clean-disabled: true
+
+security:
+  jwt:
+    access-secret-b64:  "rXzZ72WfTUG6mhO7r9wZ69qJ5S8N2duU2to9Nw5a3mY="
+    refresh-secret-b64: "m3cVvOdvptRzO2pnpqHgFfL6b+Kmtg5vFxt8jEsXXlw="
+    access-ttl:  PT15M   # 15 minutes
+    refresh-ttl: P7D     # 7 days
+
+
+logging:
+  level:
+    org.springframework.security: DEBUG
+
+
