@@ -1,0 +1,19 @@
+spring:
+  profiles:
+    active: prod
+  datasource:
+    url: jdbc:postgresql://nhom4.choi.one:5432/appdb
+    username: appuser1
+    password: secretpassword123
+    driver-class-name: org.postgresql.Driver
+
+minio:
+  endpoint: http://nhom4.choi.one:9000
+  access-key: minio
+  secret-key: miniosecret123
+  region: us-east-1
+  default-bucket: app-bucket
+  presign:
+    expiry: PT55M
+
+

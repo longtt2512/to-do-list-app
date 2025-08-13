@@ -230,7 +230,7 @@ export default {
       this.error = null
       
       try {
-        const response = await fetch('http://localhost:8081/api/members')
+        const response = await fetch('http://nhom4.choi.one:8081/api/members')
         
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`)
