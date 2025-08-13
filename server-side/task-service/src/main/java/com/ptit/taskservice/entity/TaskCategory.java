@@ -11,6 +11,7 @@ import jakarta.persistence.OrderBy;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import lombok.Data;
+import lombok.ToString;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
@@ -40,6 +41,7 @@ public class TaskCategory {
   @Column(name = "category_name", nullable = false, unique = true, length = 150)
   private String categoryName;
 
+  @ToString.Exclude
   @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
   @OrderBy("sortOrder ASC, id ASC") // ensure stable order
   private List<TaskCategoryValue> values = new ArrayList<>();

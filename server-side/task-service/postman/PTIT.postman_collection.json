@@ -28,7 +28,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"username\":\"admin\",\n    \"password\":\"password\"\n}",
+					"raw": "{\n    \"username\":\"admin\",\n    \"password\":\"password1\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -72,6 +72,44 @@
 					"path": [
 						"auth",
 						"refresh"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Changepwd",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"currentPassword\": \"password\",\n    \"newPassword\": \"password1\",\n    \"confirmNewPassword\": \"password1\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8081/auth/change-password",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"auth",
+						"change-password"
 					]
 				}
 			},
@@ -244,6 +282,219 @@
 						}
 					]
 				}
+			},
+			"response": []
+		},
+		{
+			"name": "Task",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"title\": \"Prepare sprint demo\",\n    \"startDate\": \"2025-08-15\",\n    \"description\": \"Collect screenshots, write talking points.\",\n    \"selections\": [\n        {\n            \"categoryId\": \"95123f9d-dcf7-4c60-8046-43d471a85710\",\n            \"valueId\": \"8c5a863d-de71-49bf-967d-7bc4fcf74569\"\n        }\n    ]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8081/api/tasks",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"api",
+						"tasks"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Task Update",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\n    \"title\": \"Prepare sprint demo\",\n    \"startDate\": \"2025-08-15\",\n    \"description\": \"Collect screenshots, write talking points.1111111\",\n    \"imageKey\": null,\n    \"selections\": [\n        {\n            \"categoryId\": \"95123f9d-dcf7-4c60-8046-43d471a85710\",\n            \"categoryName\": \"Task Priority\",\n            \"valueId\": \"8c5a863d-de71-49bf-967d-7bc4fcf74569\",\n            \"value\": \"Extreme\",\n            \"sortOrder\": 0\n        }\n    ]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8081/api/tasks/5d059d46-94ba-4bc9-8560-415e43fa4f43",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"api",
+						"tasks",
+						"5d059d46-94ba-4bc9-8560-415e43fa4f43"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Task Image",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "multipart/form-data",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "file",
+							"type": "file",
+							"src": "/Users/longtruong/Desktop/Screenshot 2025-08-12 at 23.01.59.png"
+						}
+					]
+				},
+				"url": {
+					"raw": "localhost:8081/api/tasks/5d059d46-94ba-4bc9-8560-415e43fa4f43/image",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"api",
+						"tasks",
+						"5d059d46-94ba-4bc9-8560-415e43fa4f43",
+						"image"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update Profile",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"firstName\":\"Alice\",\n    \"lastName\":\"Nguyen\",\n    \"email\":\"alice@example.com\",\n    \"contactNumber\":\"090-123-4567\",\n    \"position\":\"Product Manager\"\n  }",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8081/api/profile/me",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"api",
+						"profile",
+						"me"
+					]
+				},
+				"description": "Generated from cURL: curl -i -X PUT http://localhost:9090/api/profile/me \\\n  -H \"Authorization: Bearer $ACCESS\" -H \"Content-Type: application/json\" \\\n  -d '{\n    \"firstName\":\"Alice\",\n    \"lastName\":\"Nguyen\",\n    \"email\":\"alice@example.com\",\n    \"contactNumber\":\"090-123-4567\",\n    \"position\":\"Product Manager\"\n  }'"
+			},
+			"response": []
+		},
+		{
+			"name": "Upload avatar",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "file",
+							"type": "file",
+							"src": "/Users/longtruong/Desktop/Screenshot 2025-08-13 at 08.13.39.png"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://localhost:8081/api/profile/me/avatar",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"api",
+						"profile",
+						"me",
+						"avatar"
+					]
+				},
+				"description": "Generated from cURL: curl -i -X POST \"http://localhost:9090/api/profile/me/avatar?presign=true\" \\\n  -H \"Authorization: Bearer $ACCESS\" \\\n  -H \"Content-Type: multipart/form-data\" \\\n  -F \"file=@/path/to/avatar.jpg\""
 			},
 			"response": []
 		}

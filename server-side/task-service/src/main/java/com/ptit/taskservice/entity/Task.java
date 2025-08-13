@@ -11,6 +11,7 @@ import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
@@ -51,6 +52,7 @@ public class Task {
   @Column(name = "image_key", length = 512)
   private String imageKey; // MinIO object key
 
+  @ToString.Exclude
   @OneToMany(mappedBy = "task", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<TaskCategorySelection> selections = new ArrayList<>();
 
