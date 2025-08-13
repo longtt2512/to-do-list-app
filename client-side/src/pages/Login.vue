@@ -9,7 +9,7 @@
           <input type="checkbox" id="remember" />
           <label for="remember">Remember me</label>
         </div>
-        <button @click="login" class="login-button">Login</button>
+        <Button @click="login">Login</Button>
         <p class="signup-link">
           Don't have an account? <router-link to="/register" class="register-link">Create one</router-link>
         </p>
@@ -22,7 +22,12 @@
 </template>
 
 <script>
+import Button from '@/components/Button.vue'
+
 export default {
+  components: {
+    Button
+  },
   data() {
     return { email: "", password: "" };
   },
@@ -93,22 +98,6 @@ export default {
   margin-right: 8px;
 }
 
-.login-button {
-  width: 100%;
-  padding: 15px;
-  background-color: #FF6767;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  font-size: 16px;
-  font-weight: bold;
-  cursor: pointer;
-  margin-bottom: 20px;
-}
-
-.login-button:hover {
-  background-color: #e55555;
-}
 
 .signup-link {
   text-align: center;
