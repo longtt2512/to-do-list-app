@@ -25,6 +25,16 @@ jobs:
         working-directory: server-side/task-service
         run: ./gradlew clean build -x test
 
+      # 3.5. Check GHCR secret
+      - name: Check GHCR secret
+        run: |
+          if [ -z "${{ secrets.PTIT_GITHUB_TOKEN }}" ]; then
+            echo "❌ Secret PTIT_GITHUB_TOKEN is NOT set!"
+            exit 1
+          else
+            echo "✅ Secret PTIT_GITHUB_TOKEN is set (value is hidden)"
+          fi
+
       # 4. Log in to GHCR
       - name: Log in to GHCR
         uses: docker/login-action@v3
