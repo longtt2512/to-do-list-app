@@ -28,7 +28,7 @@ jobs:
       # 3.5. Check GHCR secret
       - name: Check GHCR secret
         run: |
-          if [ -z "${{ secrets.PTIT_GITHUB_TOKEN }}" ]; then
+          if [ -z "${{ vars.PTIT_GITHUB_TOKEN }}" ]; then
             echo "❌ Secret PTIT_GITHUB_TOKEN is NOT set!"
             exit 1
           else
