@@ -23,7 +23,9 @@ jobs:
       # 3. Build JAR with Gradle (skip tests)
       - name: Build JAR
         working-directory: server-side/task-service
-        run: ./gradlew clean build -x test
+        run: |
+          chmod +x gradlew
+          ./gradlew clean build -x test
 
       # 3.5. Check GHCR secret
       - name: Check GHCR secret
