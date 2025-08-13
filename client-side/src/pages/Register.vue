@@ -12,7 +12,7 @@
         <input v-model="email" type="email" placeholder="Email" class="input-field" />
         <input v-model="password" type="password" placeholder="Password" class="input-field" />
         <input v-model="confirmpassword" type="password" placeholder="Confirm Password" class="input-field" />
-        <button @click="register" class="login-button">Create Account</button>
+        <Button @click="register">Create Account</Button>
         <p class="signup-link">
           Already have an account? <router-link to="/login" class="register-link">Sign In</router-link>
         </p>
@@ -22,7 +22,12 @@
 </template>
 
 <script>
+import Button from '@/components/Button.vue'
+
 export default {
+  components: {
+    Button
+  },
   data() {
     return { 
       firstname: '', 
@@ -53,6 +58,9 @@ export default {
   background-color: #FF6767;
   width: 100vw;
   height: 100vh;
+  position: absolute;
+  top: 0;
+  left: 0;
   background-size: cover;
   background-position: center;
   display: flex;
@@ -61,8 +69,10 @@ export default {
 }
 
 .login-container {
-  width: 85%;
-  height: 85%;
+  width: 100%;
+  height: 800px;
+  max-width: 1200px;
+  max-height: 90vh;
   background-color: white;
   border-radius: 8px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
