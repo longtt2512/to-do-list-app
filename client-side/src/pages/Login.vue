@@ -46,6 +46,9 @@ export default {
   background-color: #FF6767;
   width: 100vw;
   height: 100vh;
+  position: absolute;
+  top: 0;
+  left: 0;
   background-size: cover;
   background-position: center;
   display: flex;

@@ -6,7 +6,7 @@
       <main class="p-6 flex-1">
         <router-view />
       </main>
-      <Footer />
+      <Footer theme="light" />
     </div>
   </div>
 </template>
