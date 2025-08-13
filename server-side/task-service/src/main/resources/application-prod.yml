@@ -4,7 +4,7 @@ spring:
   datasource:
     url: jdbc:postgresql://nhom4.choi.one:5432/appdb
     username: appuser1
-    password: secretpassword123
+    password: ***********
     driver-class-name: org.postgresql.Driver
 
 minio:
