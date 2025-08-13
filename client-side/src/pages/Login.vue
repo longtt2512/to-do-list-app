@@ -136,6 +136,16 @@ export default {
   padding: 20px;
 }
 
+@media (max-width: 1024px) {
+  .login-container {
+    width: 85%;
+  }
+  
+  .login-image {
+    display: none;
+  }
+}
+
 .login-image img {
   max-width: 100%;
   max-height: 100%;
