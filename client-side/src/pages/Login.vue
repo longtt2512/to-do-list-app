@@ -3,13 +3,25 @@
     <div class="login-container">
       <div class="login-form">
         <h2 class="title">Sign In</h2>
-        <input v-model="email" type="text" placeholder="Username" class="input-field" />
-        <input v-model="password" type="password" placeholder="Password" class="input-field" />
+        <TextInput 
+          v-model="email" 
+          type="text" 
+          placeholder="Username" 
+          :icon="userIcon" 
+        />
+        <TextInput 
+          v-model="password" 
+          type="password" 
+          placeholder="Password"
+          :icon="passwordIcon"
+        />
         <div class="remember-me">
           <input type="checkbox" id="remember" />
           <label for="remember">Remember me</label>
         </div>
-        <Button @click="login">Login</Button>
+        <div class="button-container">
+          <Button @click="login">Login</Button>
+        </div>
         <p class="signup-link">
           Don't have an account? <router-link to="/register" class="register-link">Create one</router-link>
         </p>
@@ -23,13 +35,20 @@
 
 <script>
 import Button from '@/components/Button.vue'
+import TextInput from '@/components/TextInput.vue'
 
 export default {
   components: {
-    Button
+    Button,
+    TextInput
   },
   data() {
-    return { email: "", password: "" };
+    return { 
+      email: "", 
+      password: "",
+      userIcon: new URL('@/assets/icons/user.svg', import.meta.url).href,
+      passwordIcon: new URL('@/assets/icons/password.svg', import.meta.url).href
+    };
   },
   methods: {
     login() {
@@ -62,7 +81,7 @@ export default {
   max-width: 1200px;
   max-height: 90vh;
   background-color: white;
-  border-radius: 8px;
+  border-radius: 10px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   display: flex;
   overflow: hidden;
@@ -83,15 +102,6 @@ export default {
   color: #333;
 }
 
-.input-field {
-  width: 100%;
-  padding: 15px;
-  margin-bottom: 20px;
-  border: 1px solid #ddd;
-  border-radius: 5px;
-  font-size: 16px;
-  box-sizing: border-box;
-}
 
 .remember-me {
   display: flex;
@@ -105,7 +115,7 @@ export default {
 
 
 .signup-link {
-  text-align: center;
+  text-align: left;
   color: #666;
 }
 
@@ -130,5 +140,11 @@ export default {
   max-width: 100%;
   max-height: 100%;
   object-fit: contain;
+}
+
+.button-container {
+  display: flex;
+  justify-content: flex-start;
+  margin-bottom: 20px;
 }
 </style>

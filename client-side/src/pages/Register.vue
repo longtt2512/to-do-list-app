@@ -6,13 +6,15 @@
       </div>
       <div class="login-form">
         <h2 class="title">Sign Up</h2>
-        <input v-model="firstname" type="text" placeholder="First Name" class="input-field" />
-        <input v-model="lastname" type="text" placeholder="Last Name" class="input-field" />
-        <input v-model="username" type="text" placeholder="Username" class="input-field" />
-        <input v-model="email" type="email" placeholder="Email" class="input-field" />
-        <input v-model="password" type="password" placeholder="Password" class="input-field" />
-        <input v-model="confirmpassword" type="password" placeholder="Confirm Password" class="input-field" />
-        <Button @click="register">Create Account</Button>
+        <TextInput v-model="firstname" type="text" placeholder="First Name" :icon="editNameIcon" />
+        <TextInput v-model="lastname" type="text" placeholder="Last Name" :icon="editNameIcon" />
+        <TextInput v-model="username" type="text" placeholder="Username" :icon="userIcon" />
+        <TextInput v-model="email" type="email" placeholder="Email" :icon="emailIcon" />
+        <TextInput v-model="password" type="password" placeholder="Password" :icon="passwordIcon" />
+        <TextInput v-model="confirmpassword" type="password" placeholder="Confirm Password" :icon="passwordOutlineIcon" />
+        <div class="button-container">
+          <Button @click="register">Create Account</Button>
+        </div>
         <p class="signup-link">
           Already have an account? <router-link to="/login" class="register-link">Sign In</router-link>
         </p>
@@ -23,10 +25,12 @@
 
 <script>
 import Button from '@/components/Button.vue'
+import TextInput from '@/components/TextInput.vue'
 
 export default {
   components: {
-    Button
+    Button,
+    TextInput
   },
   data() {
     return { 
@@ -35,7 +39,12 @@ export default {
       username: '', 
       email: '', 
       password: '', 
-      confirmpassword: '' 
+      confirmpassword: '',
+      editNameIcon: new URL('@/assets/icons/edit-name.svg', import.meta.url).href,
+      userIcon: new URL('@/assets/icons/user.svg', import.meta.url).href,
+      emailIcon: new URL('@/assets/icons/baseline-email.svg', import.meta.url).href,
+      passwordIcon: new URL('@/assets/icons/password.svg', import.meta.url).href,
+      passwordOutlineIcon: new URL('@/assets/icons/password-outline.svg', import.meta.url).href
     };
   },
   methods: {
@@ -74,7 +83,7 @@ export default {
   max-width: 1200px;
   max-height: 90vh;
   background-color: white;
-  border-radius: 8px;
+  border-radius: 10px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   display: flex;
   overflow: hidden;
@@ -95,15 +104,6 @@ export default {
   color: #333;
 }
 
-.input-field {
-  width: 100%;
-  padding: 15px;
-  margin-bottom: 20px;
-  border: 1px solid #ddd;
-  border-radius: 5px;
-  font-size: 16px;
-  box-sizing: border-box;
-}
 
 .login-button {
   width: 100%;
@@ -123,7 +123,7 @@ export default {
 }
 
 .signup-link {
-  text-align: center;
+  text-align: left;
   color: #666;
 }
 
@@ -148,5 +148,11 @@ export default {
   max-width: 100%;
   max-height: 100%;
   object-fit: contain;
+}
+
+.button-container {
+  display: flex;
+  justify-content: flex-start;
+  margin-bottom: 20px;
 }
 </style>

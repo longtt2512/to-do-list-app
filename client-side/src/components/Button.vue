@@ -16,7 +16,7 @@ export default {
 
 <style scoped>
 .button {
-  height: 60px;
+  padding: 16px 32px;
   background-color: #FF9090;
   color: white;
   border: none;
@@ -24,6 +24,8 @@ export default {
   cursor: pointer;
   font-weight: 500;
   transition: all 0.2s ease;
+  display: inline-block;
+  text-align: center;
 }
 
 .button:hover {
