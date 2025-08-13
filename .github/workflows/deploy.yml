@@ -9,6 +9,28 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    # 5.5 Debug server secrets
+      - name: Debug server secrets
+        run: |
+          if [ -z "${{ secrets.server_ssh_key }}" ]; then
+            echo "❌ SERVER_SSH_KEY is missing"
+            exit 1
+          else
+            echo "✅ SERVER_SSH_KEY is set"
+          fi
+          if [ -z "${{ secrets.SERVER_HOST }}" ]; then
+            echo "❌ SERVER_HOST is missing"
+            exit 1
+          else
+            echo "✅ SERVER_HOST is set"
+          fi
+
+          if [ -z "${{ secrets.SERVER_USER }}" ]; then
+            echo "❌ SERVER_USER is missing"
+            exit 1
+          else
+            echo "✅ SERVER_USER is set"
+          fi
       # 1. Checkout code
       - name: Checkout code
         uses: actions/checkout@v4
@@ -55,35 +77,7 @@ jobs:
           tags: ghcr.io/dodt1306/to-do-list-app:latest
           platforms: linux/arm64
 
-      # 5.5 Debug server secrets
-      - name: Debug server secrets
-        run: |
-          if [ -z "${{ secrets.SERVER_SSH_KEY }}" ]; then
-            echo "❌ SERVER_SSH_KEY is missing"
-            exit 1
-          else
-            echo "✅ SERVER_SSH_KEY is set"
-          fi
-          if [ -z "${{ secrets.SERVER_HOST }}" ]; then
-            echo "❌ SERVER_HOST is missing"
-            exit 1
-          else
-            echo "✅ SERVER_HOST is set"
-          fi
-
-          if [ -z "${{ secrets.SERVER_USER }}" ]; then
-            echo "❌ SERVER_USER is missing"
-            exit 1
-          else
-            echo "✅ SERVER_USER is set"
-          fi
-
-          if [ -z "${{ secrets.SERVER_SSH_KEY }}" ]; then
-            echo "❌ SERVER_SSH_KEY is missing"
-            exit 1
-          else
-            echo "✅ SERVER_SSH_KEY is set"
-          fi
+      
 
       # 6. Deploy to remote server via SSH
       - name: Deploy via SSH
