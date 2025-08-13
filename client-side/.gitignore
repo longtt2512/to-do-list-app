@@ -6,7 +6,8 @@ dist/
 build/
 
 # Local env files
-.env
+# Just use simple env for everything
+# .env 
 
 # Log files
 npm-debug.log*
