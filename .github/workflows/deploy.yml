@@ -58,6 +58,12 @@ jobs:
       # 5.5 Debug server secrets
       - name: Debug server secrets
         run: |
+          if [ -z "${{ secrets.SERVER_SSH_KEY }}" ]; then
+            echo "❌ SERVER_SSH_KEY is missing"
+            exit 1
+          else
+            echo "✅ SERVER_SSH_KEY is set"
+          fi
           if [ -z "${{ secrets.SERVER_HOST }}" ]; then
             echo "❌ SERVER_HOST is missing"
             exit 1
