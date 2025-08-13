@@ -31,7 +31,7 @@ jobs:
         with:
           registry: ghcr.io
           username: dodt1306
-          password: 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
+          password: ${{ secrets.PTIT_GITHUB_TOKEN }}
 
       # 5. Build & Push Docker image (multi-arch)
       - name: Build & Push Docker image
