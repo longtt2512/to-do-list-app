@@ -5,26 +5,41 @@
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between items-center h-16">
           <div class="flex items-center">
-            <h1 class="text-2xl font-bold text-gray-900">{{ $t('aboutUs.appTitle') }}</h1>
+            <h1 class="text-2xl font-bold text-gray-900">
+              {{ $t("aboutUs.appTitle") }}
+            </h1>
           </div>
           <div class="flex items-center space-x-4">
             <!-- Language Switcher -->
             <div class="flex space-x-2">
-              <button 
+              <button
                 @click="changeLanguage('en')"
-                :class="[$i18n.locale === 'en' ? 'bg-[#FF6767] text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200', 'px-2 py-1 rounded text-sm font-medium transition-colors']"
+                :class="[
+                  $i18n.locale === 'en'
+                    ? 'bg-[#FF6767] text-white'
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200',
+                  'px-2 py-1 rounded text-sm font-medium transition-colors',
+                ]"
               >
                 EN
               </button>
-              <button 
+              <button
                 @click="changeLanguage('vi')"
-                :class="[$i18n.locale === 'vi' ? 'bg-[#FF6767] text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200', 'px-2 py-1 rounded text-sm font-medium transition-colors']"
+                :class="[
+                  $i18n.locale === 'vi'
+                    ? 'bg-[#FF6767] text-white'
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200',
+                  'px-2 py-1 rounded text-sm font-medium transition-colors',
+                ]"
               >
                 VI
               </button>
             </div>
-            <router-link to="/" class="text-gray-600 hover:text-[#FF6767] px-3 py-2 rounded-md text-sm font-medium transition-colors">
-              {{ $t('aboutUs.backToApp') }}
+            <router-link
+              to="/"
+              class="text-gray-600 hover:text-[#FF6767] px-3 py-2 rounded-md text-sm font-medium transition-colors"
+            >
+              {{ $t("aboutUs.backToApp") }}
             </router-link>
           </div>
         </div>
@@ -34,9 +49,11 @@
     <!-- Hero Section -->
     <div class="bg-gradient-to-r from-white to-red-50 py-20 px-4">
       <div class="max-w-6xl mx-auto text-center">
-        <h1 class="text-5xl md:text-6xl font-bold text-gray-800 mb-6">{{ $t('aboutUs.pageTitle') }}</h1>
+        <h1 class="text-5xl md:text-6xl font-bold text-gray-800 mb-6">
+          {{ $t("aboutUs.pageTitle") }}
+        </h1>
         <p class="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-          {{ $t('aboutUs.subtitle') }}
+          {{ $t("aboutUs.subtitle") }}
         </p>
         <div class="mt-10 w-32 h-1 bg-[#FF6767] mx-auto rounded-full"></div>
       </div>
@@ -47,47 +64,70 @@
       <div class="max-w-7xl mx-auto">
         <!-- Section Title -->
         <div class="text-center mb-16">
-          <h2 class="text-3xl font-bold text-gray-800 mb-4">{{ $t('aboutUs.teamMembersTitle') }}</h2>
+          <h2 class="text-3xl font-bold text-gray-800 mb-4">
+            {{ $t("aboutUs.teamMembersTitle") }}
+          </h2>
           <p class="text-lg text-gray-600 max-w-2xl mx-auto">
-            {{ $t('aboutUs.teamMembersSubtitle') }}
+            {{ $t("aboutUs.teamMembersSubtitle") }}
           </p>
         </div>
 
         <!-- Loading State -->
         <div v-if="loading" class="flex justify-center items-center py-20">
-          <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-[#FF6767]"></div>
-          <span class="ml-3 text-gray-600">{{ $t('aboutUs.loadingMessage') }}</span>
+          <div
+            class="animate-spin rounded-full h-12 w-12 border-b-2 border-[#FF6767]"
+          ></div>
+          <span class="ml-3 text-gray-600">{{
+            $t("aboutUs.loadingMessage")
+          }}</span>
         </div>
 
         <!-- Error State -->
         <div v-else-if="error" class="text-center py-20">
           <div class="text-red-500 mb-4">
-            <svg class="w-16 h-16 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.96-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+            <svg
+              class="w-16 h-16 mx-auto mb-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.96-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"
+              ></path>
             </svg>
-            <h3 class="text-xl font-semibold mb-2">{{ $t('aboutUs.errorTitle') }}</h3>
+            <h3 class="text-xl font-semibold mb-2">
+              {{ $t("aboutUs.errorTitle") }}
+            </h3>
             <p class="text-gray-600 mb-4">{{ error }}</p>
-            <button 
-              @click="fetchMembers" 
+            <button
+              @click="fetchMembers"
               class="px-4 py-2 bg-[#FF6767] text-white rounded-lg hover:bg-red-500 transition-colors"
             >
-              {{ $t('aboutUs.tryAgainButton') }}
+              {{ $t("aboutUs.tryAgainButton") }}
             </button>
           </div>
         </div>
 
         <!-- Team Grid -->
-        <div v-else class="flex flex-wrap justify-center gap-10 max-w-6xl mx-auto">
-          <div 
-            v-for="member in members" 
-            :key="member.id" 
+        <div
+          v-else
+          class="flex flex-wrap justify-center gap-10 max-w-6xl mx-auto"
+        >
+          <div
+            v-for="member in members"
+            :key="member.id"
             class="group bg-white rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-3 border border-gray-50 overflow-hidden w-full sm:w-80 md:w-72 lg:w-80"
           >
             <!-- Photo Section with Gradient Border -->
-            <div class="relative bg-gradient-to-br from-[#FF6767] to-red-400 p-2 m-4 rounded-2xl">
+            <div
+              class="relative bg-gradient-to-br from-[#FF6767] to-red-400 p-2 m-4 rounded-2xl"
+            >
               <div class="bg-white rounded-xl p-6 text-center">
-                <img 
-                  :src="member.avatarUrl" 
+                <img
+                  :src="member.avatarUrl"
                   :alt="member.name"
                   class="w-28 h-28 mx-auto rounded-full object-cover shadow-lg cursor-pointer border-4 border-white group-hover:scale-105 transition-transform duration-300"
                   @click="openModal(member.avatarUrl)"
@@ -97,37 +137,77 @@
 
             <!-- Content Section -->
             <div class="px-6 pb-8 space-y-4">
-              <h3 class="text-xl font-bold text-gray-800 text-center mb-6">{{ member.name }}</h3>
-              
+              <h3 class="text-xl font-bold text-gray-800 text-center mb-6">
+                {{ member.name }}
+              </h3>
+
               <div class="space-y-3 text-sm">
-                <div class="flex items-center justify-between py-2 border-b border-gray-100">
-                  <span class="text-gray-500 font-medium min-w-[100px]">{{ $t('aboutUs.fields.studentCode') }}:</span>
-                  <span class="text-[#FF6767] font-bold text-right">{{ member.code }}</span>
+                <div
+                  class="flex items-center justify-between py-2 border-b border-gray-100"
+                >
+                  <span class="text-gray-500 font-medium min-w-[100px]"
+                    >{{ $t("aboutUs.fields.studentCode") }}:</span
+                  >
+                  <span class="text-[#FF6767] font-bold text-right">{{
+                    member.code
+                  }}</span>
                 </div>
-                
-                <div class="flex items-center justify-between py-2 border-b border-gray-100">
-                  <span class="text-gray-500 font-medium min-w-[100px]">{{ $t('aboutUs.fields.class') }}:</span>
-                  <span class="text-gray-700 font-medium text-right">{{ member.className }}</span>
+
+                <div
+                  class="flex items-center justify-between py-2 border-b border-gray-100"
+                >
+                  <span class="text-gray-500 font-medium min-w-[100px]"
+                    >{{ $t("aboutUs.fields.class") }}:</span
+                  >
+                  <span class="text-gray-700 font-medium text-right">{{
+                    member.className
+                  }}</span>
                 </div>
-                
-                <div class="flex items-center justify-between py-2 border-b border-gray-100">
-                  <span class="text-gray-500 font-medium min-w-[100px]">{{ $t('aboutUs.fields.dateOfBirth') }}:</span>
-                  <span class="text-gray-700 font-medium text-right">{{ formatDate(member.dob) }}</span>
+
+                <div
+                  class="flex items-center justify-between py-2 border-b border-gray-100"
+                >
+                  <span class="text-gray-500 font-medium min-w-[100px]"
+                    >{{ $t("aboutUs.fields.dateOfBirth") }}:</span
+                  >
+                  <span class="text-gray-700 font-medium text-right">{{
+                    formatDate(member.dob)
+                  }}</span>
                 </div>
-                
-                <div class="flex items-center justify-between py-2 border-b border-gray-100">
-                  <span class="text-gray-500 font-medium min-w-[100px]">{{ $t('aboutUs.fields.phone') }}:</span>
-                  <span class="text-gray-700 font-medium text-right">{{ member.phone }}</span>
+
+                <div
+                  class="flex items-center justify-between py-2 border-b border-gray-100"
+                >
+                  <span class="text-gray-500 font-medium min-w-[100px]"
+                    >{{ $t("aboutUs.fields.phone") }}:</span
+                  >
+                  <span class="text-gray-700 font-medium text-right">{{
+                    member.phone
+                  }}</span>
                 </div>
-                
-                <div class="flex items-center justify-between py-2 border-b border-gray-100">
-                  <span class="text-gray-500 font-medium min-w-[100px]">{{ $t('aboutUs.fields.email') }}:</span>
-                  <span class="text-blue-600 font-medium break-words text-right text-xs">{{ member.email }}</span>
+
+                <div
+                  class="flex items-center justify-between py-2 border-b border-gray-100"
+                >
+                  <span class="text-gray-500 font-medium min-w-[100px]"
+                    >{{ $t("aboutUs.fields.email") }}:</span
+                  >
+                  <span
+                    class="text-blue-600 font-medium break-words text-right text-xs"
+                    >{{ member.email }}</span
+                  >
                 </div>
-                
-                <div class="flex items-center justify-between py-2 border-b border-gray-100">
-                  <span class="text-gray-500 font-medium min-w-[100px]">{{ $t('aboutUs.fields.company') }}:</span>
-                  <span class="text-gray-700 font-medium text-right break-words">{{ member.company?.name || 'N/A' }}</span>
+
+                <div
+                  class="flex items-center justify-between py-2 border-b border-gray-100"
+                >
+                  <span class="text-gray-500 font-medium min-w-[100px]"
+                    >{{ $t("aboutUs.fields.company") }}:</span
+                  >
+                  <span
+                    class="text-gray-700 font-medium text-right break-words"
+                    >{{ member.company?.name || "N/A" }}</span
+                  >
                 </div>
               </div>
             </div>
@@ -139,37 +219,87 @@
     <!-- Mission Statement Section -->
     <div class="bg-gray-50 py-20 px-4 border-t">
       <div class="max-w-5xl mx-auto text-center">
-        <h3 class="text-3xl font-bold text-gray-800 mb-8">{{ $t('aboutUs.mission.title') }}</h3>
+        <h3 class="text-3xl font-bold text-gray-800 mb-8">
+          {{ $t("aboutUs.mission.title") }}
+        </h3>
         <p class="text-lg text-gray-600 leading-relaxed mb-8">
-          {{ $t('aboutUs.mission.description') }}
+          {{ $t("aboutUs.mission.description") }}
         </p>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mt-12">
           <div class="text-center">
-            <div class="w-16 h-16 bg-[#FF6767] rounded-full flex items-center justify-center mx-auto mb-4">
-              <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+            <div
+              class="w-16 h-16 bg-[#FF6767] rounded-full flex items-center justify-center mx-auto mb-4"
+            >
+              <svg
+                class="w-8 h-8 text-white"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
+                ></path>
               </svg>
             </div>
-            <h4 class="text-xl font-semibold text-gray-800 mb-2">{{ $t('aboutUs.mission.values.collaboration.title') }}</h4>
-            <p class="text-gray-600">{{ $t('aboutUs.mission.values.collaboration.description') }}</p>
+            <h4 class="text-xl font-semibold text-gray-800 mb-2">
+              {{ $t("aboutUs.mission.values.collaboration.title") }}
+            </h4>
+            <p class="text-gray-600">
+              {{ $t("aboutUs.mission.values.collaboration.description") }}
+            </p>
           </div>
           <div class="text-center">
-            <div class="w-16 h-16 bg-[#FF6767] rounded-full flex items-center justify-center mx-auto mb-4">
-              <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+            <div
+              class="w-16 h-16 bg-[#FF6767] rounded-full flex items-center justify-center mx-auto mb-4"
+            >
+              <svg
+                class="w-8 h-8 text-white"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"
+                ></path>
               </svg>
             </div>
-            <h4 class="text-xl font-semibold text-gray-800 mb-2">{{ $t('aboutUs.mission.values.innovation.title') }}</h4>
-            <p class="text-gray-600">{{ $t('aboutUs.mission.values.innovation.description') }}</p>
+            <h4 class="text-xl font-semibold text-gray-800 mb-2">
+              {{ $t("aboutUs.mission.values.innovation.title") }}
+            </h4>
+            <p class="text-gray-600">
+              {{ $t("aboutUs.mission.values.innovation.description") }}
+            </p>
           </div>
           <div class="text-center">
-            <div class="w-16 h-16 bg-[#FF6767] rounded-full flex items-center justify-center mx-auto mb-4">
-              <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"></path>
+            <div
+              class="w-16 h-16 bg-[#FF6767] rounded-full flex items-center justify-center mx-auto mb-4"
+            >
+              <svg
+                class="w-8 h-8 text-white"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"
+                ></path>
               </svg>
             </div>
-            <h4 class="text-xl font-semibold text-gray-800 mb-2">{{ $t('aboutUs.mission.values.quality.title') }}</h4>
-            <p class="text-gray-600">{{ $t('aboutUs.mission.values.quality.description') }}</p>
+            <h4 class="text-xl font-semibold text-gray-800 mb-2">
+              {{ $t("aboutUs.mission.values.quality.title") }}
+            </h4>
+            <p class="text-gray-600">
+              {{ $t("aboutUs.mission.values.quality.description") }}
+            </p>
           </div>
         </div>
       </div>
@@ -179,11 +309,14 @@
     <footer class="bg-white py-12 px-4 border-t">
       <div class="max-w-4xl mx-auto text-center">
         <p class="text-gray-500 text-sm">
-          {{ $t('aboutUs.footer.copyright') }}
+          {{ $t("aboutUs.footer.copyright") }}
         </p>
         <div class="mt-4">
-          <router-link to="/" class="text-[#FF6767] hover:text-red-500 font-medium transition-colors">
-            {{ $t('aboutUs.footer.returnLink') }}
+          <router-link
+            to="/"
+            class="text-[#FF6767] hover:text-red-500 font-medium transition-colors"
+          >
+            {{ $t("aboutUs.footer.returnLink") }}
           </router-link>
         </div>
       </div>
@@ -195,72 +328,76 @@
 </template>
 
 <script>
-import ModalImage from '../components/ModalImage.vue'
-import { useI18n } from 'vue-i18n'
+import ModalImage from "@/components/ModalImage.vue";
+import { getAllMembers } from "@/services/member-service.js";
+import { useI18n } from "vue-i18n";
 
 export default {
-  name: 'AboutUsStandalone',
+  name: "AboutUsStandalone",
   components: {
-    ModalImage
+    ModalImage,
   },
   setup() {
-    const { locale } = useI18n()
-    return { locale }
+    const { locale } = useI18n();
+    return { locale };
   },
   data() {
     return {
       modalImageSrc: null,
       members: [],
       loading: false,
-      error: null
-    }
+      error: null,
+    };
   },
   async mounted() {
     // Load saved language preference
-    const savedLanguage = localStorage.getItem('preferred-language')
-    if (savedLanguage && (savedLanguage === 'en' || savedLanguage === 'vi')) {
-      this.$i18n.locale = savedLanguage
+    const savedLanguage = localStorage.getItem("preferred-language");
+    if (savedLanguage && (savedLanguage === "en" || savedLanguage === "vi")) {
+      this.$i18n.locale = savedLanguage;
     }
-    
-    await this.fetchMembers()
+
+    await this.fetchMembers();
   },
   methods: {
     async fetchMembers() {
-      this.loading = true
-      this.error = null
-      
+      this.loading = true;
+      this.error = null;
+
       try {
-        const response = await fetch('http://nhom4.choi.one:8081/api/members')
-        
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`)
+        const result = await getAllMembers();
+
+        if (result.success) {
+          this.members = result.data;
+        } else {
+          throw new Error(result.error);
         }
-        
-        const data = await response.json()
-        this.members = data
-        
       } catch (error) {
-        console.error('Failed to fetch members:', error)
-        this.error = error.message || 'Failed to load team members. Please check your internet connection.'
+        console.error("Failed to fetch members:", error);
+        this.error =
+          error.message ||
+          "Failed to load team members. Please check your internet connection.";
       } finally {
-        this.loading = false
+        this.loading = false;
       }
     },
     openModal(imageSrc) {
-      this.modalImageSrc = imageSrc
+      this.modalImageSrc = imageSrc;
     },
     formatDate(dateString) {
-      if (!dateString) return 'N/A'
-      const options = { year: 'numeric', month: 'short', day: 'numeric' }
-      return new Date(dateString).toLocaleDateString(this.$i18n.locale === 'vi' ? 'vi-VN' : 'en-US', options)
+      if (!dateString) return "N/A";
+      const options = { year: "numeric", month: "short", day: "numeric" };
+      return new Date(dateString).toLocaleDateString(
+        this.$i18n.locale === "vi" ? "vi-VN" : "en-US",
+        options
+      );
     },
     changeLanguage(lang) {
-      this.$i18n.locale = lang
+      this.$i18n.locale = lang;
       // Save language preference to localStorage
-      localStorage.setItem('preferred-language', lang)
-    }
-  }
-}
+      localStorage.setItem("preferred-language", lang);
+    },
+  },
+};
 </script>
 
 <style scoped>
@@ -274,7 +411,7 @@ export default {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #FF6767;
+  background: #ff6767;
   border-radius: 4px;
 }
 
