@@ -1,7 +1,8 @@
-# Stage 1: Build JAR
-FROM gradle:8.5-jdk17 AS builder
+# Stage 1: Build JAR (ARM64-friendly)
+FROM --platform=$BUILDPLATFORM gradle:8.5-jdk17 AS builder
 WORKDIR /app
 COPY . .
+RUN chmod +x gradlew
 RUN ./gradlew clean build -x test
 
 # Stage 2: Run application
