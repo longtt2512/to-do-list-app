@@ -12,8 +12,13 @@
         <TextInput v-model="email" type="email" placeholder="Email" :icon="emailIcon" />
         <TextInput v-model="password" type="password" placeholder="Password" :icon="passwordIcon" />
         <TextInput v-model="confirmpassword" type="password" placeholder="Confirm Password" :icon="passwordOutlineIcon" />
+        <div v-if="errorMessage" class="error-message">
+          {{ errorMessage }}
+        </div>
         <div class="button-container">
-          <Button @click="register">Create Account</Button>
+          <Button @click="register" :disabled="isLoading">
+            {{ isLoading ? 'Creating Account...' : 'Create Account' }}
+          </Button>
         </div>
         <p class="signup-link">
           Already have an account? <router-link to="/login" class="register-link">Sign In</router-link>
@@ -26,6 +31,7 @@
 <script>
 import Button from '@/components/Button.vue'
 import TextInput from '@/components/TextInput.vue'
+import authService from '@/services/auth-service'
 
 export default {
   components: {
@@ -40,6 +46,8 @@ export default {
       email: '', 
       password: '', 
       confirmpassword: '',
+      errorMessage: '',
+      isLoading: false,
       editNameIcon: new URL('@/assets/icons/edit-name.svg', import.meta.url).href,
       userIcon: new URL('@/assets/icons/user.svg', import.meta.url).href,
       emailIcon: new URL('@/assets/icons/baseline-email.svg', import.meta.url).href,
@@ -48,14 +56,68 @@ export default {
     };
   },
   methods: {
-    register() {
-      localStorage.setItem('user', JSON.stringify({ 
-        firstname: this.firstname, 
-        lastname: this.lastname, 
-        username: this.username, 
-        email: this.email 
-      }));
-      this.$router.push('/');
+    validateForm() {
+      // Check if all fields are filled
+      if (!this.firstname || !this.lastname || !this.username || !this.email || !this.password || !this.confirmpassword) {
+        return 'All fields are required';
+      }
+
+      // Validate email format
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(this.email)) {
+        return 'Please enter a valid email address';
+      }
+
+      // Validate password length
+      if (this.password.length < 6) {
+        return 'Password must be at least 6 characters long';
+      }
+
+      // Check if passwords match
+      if (this.password !== this.confirmpassword) {
+        return 'Passwords do not match';
+      }
+
+      return null;
+    },
+
+    async register() {
+      this.errorMessage = '';
+      
+      // Validate form
+      const validationError = this.validateForm();
+      if (validationError) {
+        this.errorMessage = validationError;
+        return;
+      }
+
+      this.isLoading = true;
+
+      try {
+        const result = await authService.register({
+          firstname: this.firstname,
+          lastname: this.lastname,
+          username: this.username,
+          email: this.email,
+          password: this.password
+        });
+
+        if (result.success) {
+          if (result.data.token) {
+            authService.saveToken(result.data.token);
+            localStorage.setItem('user', JSON.stringify(result.data.user));
+            this.$router.push('/');
+          } else {
+            this.errorMessage = 'Registration failed: No token received';
+          }
+        } else {
+          this.errorMessage = result.error;
+        }
+      } catch (error) {
+        this.errorMessage = 'Registration failed. Please try again.';
+      } finally {
+        this.isLoading = false;
+      }
     }
   }
 };
@@ -80,13 +142,29 @@ export default {
 .login-container {
   width: 100%;
   height: 800px;
+  min-height: 600px;
   max-width: 1200px;
-  max-height: 90vh;
+  max-height: calc(100vh - 140px); /* Adjust for footer space */
   background-color: white;
   border-radius: 10px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   display: flex;
   overflow: hidden;
+}
+
+@media (max-height: 900px) {
+  .login-container {
+    max-height: calc(100vh - 120px);
+    height: auto;
+    min-height: 600px;
+  }
+}
+
+@media (max-height: 700px) {
+  .login-container {
+    max-height: calc(100vh - 100px);
+    min-height: 600px;
+  }
 }
 
 .login-form {
@@ -164,5 +242,15 @@ export default {
   display: flex;
   justify-content: flex-start;
   margin-bottom: 20px;
+}
+
+.error-message {
+  color: #dc3545;
+  font-size: 14px;
+  margin-bottom: 15px;
+  padding: 8px 12px;
+  background-color: #f8d7da;
+  border: 1px solid #f5c6cb;
+  border-radius: 4px;
 }
 </style>

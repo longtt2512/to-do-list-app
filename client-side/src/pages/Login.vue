@@ -4,7 +4,7 @@
       <div class="login-form">
         <h2 class="title">Sign In</h2>
         <TextInput 
-          v-model="email" 
+          v-model="username" 
           type="text" 
           placeholder="Username" 
           :icon="userIcon" 
@@ -15,12 +15,17 @@
           placeholder="Password"
           :icon="passwordIcon"
         />
+        <div v-if="errorMessage" class="error-message">
+          {{ errorMessage }}
+        </div>
         <div class="remember-me">
           <input type="checkbox" id="remember" />
           <label for="remember">Remember me</label>
         </div>
         <div class="button-container">
-          <Button @click="login">Login</Button>
+          <Button @click="login" :disabled="isLoading">
+            {{ isLoading ? 'Logging in...' : 'Login' }}
+          </Button>
         </div>
         <p class="signup-link">
           Don't have an account? <router-link to="/register" class="register-link">Create one</router-link>
@@ -36,6 +41,7 @@
 <script>
 import Button from '@/components/Button.vue'
 import TextInput from '@/components/TextInput.vue'
+import authService from '@/services/auth-service'
 
 export default {
   components: {
@@ -44,16 +50,46 @@ export default {
   },
   data() {
     return { 
-      email: "", 
+      username: "", 
       password: "",
+      errorMessage: "",
+      isLoading: false,
       userIcon: new URL('@/assets/icons/user.svg', import.meta.url).href,
       passwordIcon: new URL('@/assets/icons/password.svg', import.meta.url).href
     };
   },
   methods: {
-    login() {
-      localStorage.setItem("user", JSON.stringify({ email: this.email }));
-      this.$router.push("/");
+    async login() {
+      if (!this.username || !this.password) {
+        this.errorMessage = "Please enter both username and password";
+        return;
+      }
+
+      this.isLoading = true;
+      this.errorMessage = "";
+
+      try {
+        const result = await authService.login({
+          username: this.username,
+          password: this.password
+        });
+
+        if (result.success) {
+          if (result.data.token) {
+            authService.saveToken(result.data.token);
+            localStorage.setItem("user", JSON.stringify({ username: this.username }));
+            this.$router.push("/");
+          } else {
+            this.errorMessage = "Login failed: No token received";
+          }
+        } else {
+          this.errorMessage = "Username or password incorrect";
+        }
+      } catch (error) {
+        this.errorMessage = "Username or password incorrect";
+      } finally {
+        this.isLoading = false;
+      }
     },
   },
 };
@@ -79,12 +115,27 @@ export default {
   width: 100%;
   height: 800px;
   max-width: 1200px;
-  max-height: 90vh;
+  max-height: calc(100vh - 140px); /* Adjust for footer space */
   background-color: white;
   border-radius: 10px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   display: flex;
   overflow: hidden;
+}
+
+@media (max-height: 900px) {
+  .login-container {
+    max-height: calc(100vh - 120px);
+    height: auto;
+    min-height: 600px;
+  }
+}
+
+@media (max-height: 700px) {
+  .login-container {
+    max-height: calc(100vh - 100px);
+    min-height: 500px;
+  }
 }
 
 .login-form {
@@ -156,5 +207,15 @@ export default {
   display: flex;
   justify-content: flex-start;
   margin-bottom: 20px;
+}
+
+.error-message {
+  color: #dc3545;
+  font-size: 14px;
+  margin-bottom: 15px;
+  padding: 8px 12px;
+  background-color: #f8d7da;
+  border: 1px solid #f5c6cb;
+  border-radius: 4px;
 }
 </style>
