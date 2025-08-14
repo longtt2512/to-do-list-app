@@ -1,13 +1,15 @@
 <template>
-  <div class="min-h-screen flex">
-    <Sidebar class="hidden md:block" />
-    <div class="flex-1 min-h-screen md:ml-64 flex flex-col">
-      <Header />
-      <main class="p-6 flex-1">
-        <router-view />
-      </main>
-      <Footer theme="light" />
-    </div>
+  <div class="min-h-screen flex flex-col">
+    <Header />
+    <main class="flex-1 flex">
+      <Sidebar class="hidden md:block" />
+      <div class="flex-1 flex flex-col">
+        <div class="flex-1 p-6">
+          <router-view />
+        </div>
+        <Footer theme="light" />
+      </div>
+    </main>
   </div>
 </template>
 
