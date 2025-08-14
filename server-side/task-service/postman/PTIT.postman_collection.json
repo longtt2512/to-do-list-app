@@ -7,6 +7,41 @@
 	},
 	"item": [
 		{
+			"name": "Signup",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"firstName\": \"Alice\",\n    \"lastName\": \"Nguyen\",\n    \"username\": \"alice\",\n    \"email\": \"alice@example.com\",\n    \"password\": \"Str0ngPass!\",\n    \"confirmPassword\": \"Str0ngPass!\"\n  }",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8081/auth/signup",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"auth",
+						"signup"
+					]
+				},
+				"description": "Generated from cURL: curl -i -X POST http://localhost:9090/auth/signup \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\n    \"firstName\": \"Alice\",\n    \"lastName\": \"Nguyen\",\n    \"username\": \"alice\",\n    \"email\": \"alice@example.com\",\n    \"password\": \"Str0ngPass!\",\n    \"confirmPassword\": \"Str0ngPass!\"\n  }'\n# Expect: 201 Created\n"
+			},
+			"response": []
+		},
+		{
 			"name": "Login",
 			"event": [
 				{

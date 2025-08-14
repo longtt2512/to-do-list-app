@@ -2,15 +2,21 @@ package com.ptit.taskservice.service;
 
 
 import com.ptit.taskservice.dto.request.ProfileRequest;
+import com.ptit.taskservice.dto.request.SignupRequest;
 import com.ptit.taskservice.dto.response.ProfileResponse;
+import com.ptit.taskservice.dto.response.SignupResponse;
+import com.ptit.taskservice.entity.Role;
 import com.ptit.taskservice.entity.User;
 import com.ptit.taskservice.entity.UserProfile;
+import com.ptit.taskservice.repository.RoleRepository;
 import com.ptit.taskservice.repository.UserProfileRepository;
 import com.ptit.taskservice.repository.UserRepository;
 import org.apache.commons.io.FilenameUtils;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -22,6 +28,7 @@ import java.time.Instant;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * @author long.truong
@@ -30,15 +37,19 @@ import java.util.Objects;
 @Transactional
 public class ProfileServiceImpl implements ProfileService {
 
-  private final UserRepository users;
+  private final UserRepository userRepository;
   private final UserProfileRepository profiles;
   private final FileService files;
+  private final PasswordEncoder encoder;
+  private final RoleRepository roleRepository;
   private final Duration presignExpiry = Duration.ofMinutes(15); // tweak or inject from config
 
-  public ProfileServiceImpl(UserRepository users, UserProfileRepository profiles, FileService files) {
-    this.users = users;
+  public ProfileServiceImpl(UserRepository userRepository, UserProfileRepository profiles, FileService files, PasswordEncoder encoder, RoleRepository roleRepository) {
+    this.userRepository = userRepository;
     this.profiles = profiles;
     this.files = files;
+    this.encoder = encoder;
+    this.roleRepository = roleRepository;
   }
 
   @Transactional(readOnly = true)
@@ -110,6 +121,47 @@ public class ProfileServiceImpl implements ProfileService {
     return toDto(p); // includes fresh presigned URL
   }
 
+  @Override
+  @Transactional
+  public SignupResponse register(SignupRequest req) {
+
+    // 1) confirm password
+    if (!req.password().equals(req.confirmPassword())) {
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Password confirmation does not match");
+    }
+
+    // 2) unique username (and optionally email—see note below)
+    if (userRepository.existsByUsername(req.username())) {
+      throw new ResponseStatusException(HttpStatus.CONFLICT, "Username is already taken");
+    }
+    Role userRole = roleRepository.findByName("ROLE_USER").orElseThrow(() -> new NoSuchElementException("Role USER not found"));
+    // 3) create user
+    User user = new User();
+    user.setUsername(req.username());
+    user.setPassword(encoder.encode(req.password()));
+    user.setRoles(Set.of(userRole)); // default role, can be extended later
+
+    try {
+      userRepository.save(user);
+    } catch (DataIntegrityViolationException e) {
+      // Covers race conditions on unique constraints
+      throw new ResponseStatusException(HttpStatus.CONFLICT, "Username is already taken", e);
+    }
+
+    // 4) create profile
+    UserProfile profile = new UserProfile();
+    profile.setUser(user);
+    profile.setFirstName(req.firstName());
+    profile.setLastName(req.lastName());
+    profile.setEmail(req.email());
+    // contactNumber, position, avatarKey are optional initially
+    profiles.save(profile);
+
+    return new SignupResponse(user.getId(), user.getUsername(),
+        profile.getFirstName(), profile.getLastName(), profile.getEmail());
+  }
+
+
   /* helpers */
 
   private User currentUser() {
@@ -118,7 +170,7 @@ public class ProfileServiceImpl implements ProfileService {
       throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Not authenticated");
     }
     String username = auth.getName();
-    return users.findByUsername(username).orElseThrow(() -> new NoSuchElementException("User not found"));
+    return userRepository.findByUsername(username).orElseThrow(() -> new NoSuchElementException("User not found"));
   }
 
   private ProfileResponse toDto(UserProfile p) {
