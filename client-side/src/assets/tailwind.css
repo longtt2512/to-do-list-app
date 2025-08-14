@@ -5,6 +5,18 @@
 @layer base {
   :root {
     font-family: 'Montserrat', ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji" !important;
+    
+    /* Color Variables */
+    --primary-color: #FF6767;
+    --primary-hover: rgba(255, 255, 255, 0.1);
+    --header-bg: #F8F8F8;
+    --header-height: 100px;
+    --sidebar-bg: var(--primary-color);
+    --sidebar-text: #ffffff;
+    --sidebar-text-secondary: rgba(255, 255, 255, 0.75);
+    --search-bg: #ffffff;
+    --text-primary: #000000;
+    --text-secondary: #6b7280;
   }
   
   html {
@@ -23,4 +35,44 @@
 /* Custom small utilities to match Figma look (example) */
 body { 
   @apply bg-gray-100 text-gray-900; 
+}
+
+/* Custom utility classes for consistent theming */
+@layer utilities {
+  .bg-primary {
+    background-color: var(--primary-color);
+  }
+  
+  .text-primary {
+    color: var(--primary-color);
+  }
+  
+  .bg-header {
+    background-color: var(--header-bg);
+  }
+  
+  .h-header {
+    height: var(--header-height);
+    min-height: var(--header-height);
+  }
+  
+  .bg-sidebar {
+    background-color: var(--sidebar-bg);
+  }
+  
+  .text-sidebar {
+    color: var(--sidebar-text);
+  }
+  
+  .text-sidebar-secondary {
+    color: var(--sidebar-text-secondary);
+  }
+  
+  .bg-search {
+    background-color: var(--search-bg);
+  }
+  
+  .hover-primary:hover {
+    background-color: var(--primary-hover);
+  }
 }
