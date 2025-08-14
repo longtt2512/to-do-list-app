@@ -1,15 +1,15 @@
 <template>
   <div
-    class="relative bg-white border border-[#A1A3AB] rounded-xl px-[40px] py-[15px] hover:shadow-md transition-shadow">
+    class="bg-white relative border border-[#A1A3AB] rounded-xl px-[40px] py-[15px] hover:shadow-md transition-shadow">
     <!-- Status Indicator -->
-    <div class="w-3 h-3 rounded-full border-2 mt-2 absolute top-3 left-3" :class="getStatusClasses(task.status)">
+    <div class="w-4 h-4 rounded-full border-2 mt-2 absolute top-2 left-3" :class="getStatusClasses(task.status)">
     </div>
 
     <button class="absolute top-1 right-3 w-6 h-6 flex items-center justify-center hover:bg-gray-100 rounded-full transition-colors">
       <img src="../assets/icons/3-dot.svg" alt="3-dot" class="w-4 h-4">
     </button>
     <!-- Top Section -->
-    <div class="flex items-start justify-between mb-4 gap-3">
+    <div class="flex items-start justify-between mb-1 gap-3">
       <!-- Task Details -->
       <div class="flex-1">
         <h3 class="font-bold text-[16px]">{{ task.title }}</h3>
@@ -22,7 +22,7 @@
     <div class="flex items-center justify-between space-y-2 text-[10px]">
       <div class="flex items-center justify-between gap-1">
         <span>Priority:</span>
-        <span>{{ getPriorityText(task.priority) }}</span>
+        <span class="text-[#42ADE2]">{{ getPriorityText(task.priority) }}</span>
       </div>
 
       <div class="flex items-center justify-between gap-1">

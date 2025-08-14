@@ -1,8 +1,8 @@
 <template>
   <div
-    class="relative bg-white border border-gray-200 rounded-lg px-[40px] py-[15px] hover:shadow-md transition-shadow">
+    class="bg-white relative border border-[#A1A3AB] rounded-xl px-[40px] py-[10px] hover:shadow-md transition-shadow">
     <!-- Status Indicator -->
-    <div class="w-3 h-3 rounded-full border-2 mt-2 absolute top-3 left-3" :class="getStatusClasses(task.status)">
+    <div class="w-4 h-4 rounded-full border-2 mt-2 absolute top-2 left-3" :class="getStatusClasses(task.status)">
     </div>
 
     <button
@@ -10,25 +10,25 @@
       <img src="../assets/icons/3-dot.svg" alt="3-dot" class="w-4 h-4">
     </button>
     <!-- Top Section -->
-    <div class="flex items-start justify-between mb-4 gap-3">
+    <div class="flex items-start justify-between gap-2">
       <!-- Task Details -->
-      <div class="flex-1">
+      <div class="flex-1 flex flex-col gap-2">
         <h3 class="font-bold text-[16px]">{{ task.title }}</h3>
-        <p class="text-[14px] text-[#747474] leading-relaxed">{{ task.description || 'No description available' }}</p>
-      </div>
-      <img :src="task.image || '/src/assets/avatar1.png'" :alt="task.title" class="w-[88px] h-[88px] rounded-xl overflow-hidden object-cover mt-5">
-    </div>
+        <p class="text-[14px] text-[#747474] leading-relaxed line-clamp-2"
+          style="-webkit-line-clamp:2; display:-webkit-box; -webkit-box-orient:vertical; overflow:hidden;">
+          {{ task.description || 'No description available' }}
+        </p>
+        <div class="flex items-center gap-1 text-[10px]">
+          <span>Status:</span>
+          <span :class="getStatusTextClasses(task.status)">
+            {{ getStatusText(task.status) }}
+          </span>
+        </div>
 
-    <!-- Bottom Section - Metadata -->
-    <div class="flex flex-col space-y-2 text-[10px]">
-      <div class="flex items-center gap-1">
-        <span>Status:</span>
-        <span :class="getStatusTextClasses(task.status)">
-          {{ getStatusText(task.status) }}
-        </span>
+        <span class="text-[10px] text-[#A1A3AB]">Completed 2 days ago.</span>
       </div>
-
-      <span>Completed 2 days ago.</span>
+      <img :src="task.image || '/src/assets/avatar1.png'" :alt="task.title"
+        class="w-[88px] h-[88px] rounded-xl overflow-hidden object-cover mt-5">
     </div>
   </div>
 </template>
