@@ -103,12 +103,20 @@ export default {
         });
 
         if (result.success) {
-          if (result.data.token) {
+          // If API indicates resource created (201), redirect to Login page
+          if (result.status === 201 || result?.data?.status === 201) {
+            this.$router.push('/login');
+          } else if (result.data && result.data.token) {
+            // Fallback for flows where a token is returned on registration
             authService.saveToken(result.data.token);
-            localStorage.setItem('user', JSON.stringify(result.data.user));
+            if (result.data.user) {
+              localStorage.setItem('user', JSON.stringify(result.data.user));
+            }
             this.$router.push('/');
           } else {
-            this.errorMessage = 'Registration failed: No token received';
+            // If no token and not a 201-created flow, show an error message
+            this.errorMessage = 'Registration successful. Please log in.';
+            this.$router.push('/login');
           }
         } else {
           this.errorMessage = result.error;

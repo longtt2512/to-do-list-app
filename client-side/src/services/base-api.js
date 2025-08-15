@@ -13,6 +13,16 @@ const createApiClient = () => {
     },
   })
 
+  // Attach accessToken as Bearer for every request
+  client.interceptors.request.use((config) => {
+    const token = localStorage.getItem('accessToken')
+    if (token) {
+      config.headers = config.headers || {}
+      config.headers.Authorization = `Bearer ${token}`
+    }
+    return config
+  })
+
   client.interceptors.response.use(
     (response) => response.data,
     (error) => {

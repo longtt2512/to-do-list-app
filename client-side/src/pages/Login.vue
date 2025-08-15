@@ -74,19 +74,20 @@ export default {
           password: this.password
         });
 
-        if (result.success) {
-          if (result.data.token) {
-            authService.saveToken(result.data.token);
+        if (result.success && result.status === 200) {
+          const { accessToken, refreshToken } = result.data || {}
+          if (accessToken && refreshToken) {
+            // Tokens already saved in authService.login, but ensure presence
             localStorage.setItem("user", JSON.stringify({ username: this.username }));
             this.$router.push("/");
           } else {
             this.errorMessage = "Login failed: No token received";
           }
         } else {
-          this.errorMessage = "Username or password incorrect";
+          this.errorMessage = result?.error || "Username or password incorrect";
         }
       } catch (error) {
-        this.errorMessage = "Username or password incorrect";
+        this.errorMessage = error?.message || "Username or password incorrect";
       } finally {
         this.isLoading = false;
       }

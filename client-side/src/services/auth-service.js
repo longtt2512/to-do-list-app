@@ -1,88 +1,107 @@
 export const authService = {
   async login(credentials) {
-    // Mock API delay
-    await new Promise(resolve => setTimeout(resolve, 1000))
-    
-    // Mock user credentials
-    const validUsers = [
-      { username: 'admin', password: 'admin123' },
-      { username: 'user', password: 'user123' },
-      { username: 'test', password: 'test123' }
-    ]
-    
-    // Check credentials
-    const user = validUsers.find(u => 
-      u.username === credentials.username && u.password === credentials.password
-    )
-    
-    if (user) {
-      // Mock successful response
-      return {
-        success: true,
-        data: {
-          token: `mock-jwt-token-${Date.now()}`,
-          user: {
-            username: user.username,
-            id: Math.floor(Math.random() * 1000)
-          }
+    try {
+      const baseUrl = import.meta.env.VITE_API_URL || 'http://nhom4.choi.one:8081'
+      const res = await fetch(`${baseUrl}/auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          username: credentials.username,
+          password: credentials.password
+        })
+      })
+
+      const data = await res.json().catch(() => ({}))
+
+      if (res.ok && res.status === 200) {
+        const { accessToken, refreshToken } = data || {}
+        if (accessToken && refreshToken) {
+          this.saveTokens(accessToken, refreshToken)
+        }
+        return {
+          success: true,
+          status: res.status,
+          data
         }
       }
-    } else {
-      // Mock error response
+
       return {
         success: false,
-        error: 'Invalid credentials'
+        status: res.status,
+        error: data?.message || 'Login failed'
+      }
+    } catch (err) {
+      return {
+        success: false,
+        error: err.message || 'Login failed'
       }
     }
   },
 
   async register(userData) {
-    // Mock API delay
-    await new Promise(resolve => setTimeout(resolve, 1000))
-    
-    // Mock existing users for email validation
-    const existingUsers = [
-      'admin@example.com',
-      'user@example.com',
-      'test@example.com'
-    ]
-    
-    // Check if email already exists
-    if (existingUsers.includes(userData.email)) {
-      return {
-        success: false,
-        error: 'Email already exists'
+    // Real API call to signup endpoint
+    try {
+      // Map incoming UI fields to API expected payload
+      const payload = {
+        firstName: userData.firstName || userData.firstname || '',
+        lastName: userData.lastName || userData.lastname || '',
+        username: userData.username || '',
+        email: userData.email || '',
+        password: userData.password || '',
+        confirmPassword: userData.confirmPassword || userData.confirmpassword || userData.password || ''
       }
-    }
-    
-    // Mock successful registration
-    return {
-      success: true,
-      data: {
-        token: `mock-jwt-token-${Date.now()}`,
-        user: {
-          email: userData.email,
-          username: userData.username,
-          id: Math.floor(Math.random() * 1000)
+
+      // Use fetch here to preserve HTTP status (Axios interceptor in base-api strips it)
+      const baseUrl = import.meta.env.VITE_API_URL || 'http://nhom4.choi.one:8081'
+      const res = await fetch(`${baseUrl}/auth/signup`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      })
+
+      const data = await res.json().catch(() => ({}))
+
+      if (res.ok || res.status === 201) {
+        return {
+          success: true,
+          status: res.status,
+          data
         }
       }
+
+      // Non-2xx response
+      return {
+        success: false,
+        error: data?.message || `Registration failed with status ${res.status}`
+      }
+    } catch (err) {
+      return {
+        success: false,
+        error: err.message || 'Registration failed'
+      }
     }
   },
   
-  saveToken(token) {
-    localStorage.setItem('token', token)
+  saveTokens(accessToken, refreshToken) {
+    localStorage.setItem('accessToken', accessToken)
+    localStorage.setItem('refreshToken', refreshToken)
   },
   
-  getToken() {
-    return localStorage.getItem('token')
+  getAccessToken() {
+    return localStorage.getItem('accessToken')
   },
   
-  removeToken() {
-    localStorage.removeItem('token')
+  getRefreshToken() {
+    return localStorage.getItem('refreshToken')
+  },
+  
+  removeTokens() {
+    localStorage.removeItem('accessToken')
+    localStorage.removeItem('refreshToken')
   },
   
   isAuthenticated() {
-    return !!this.getToken()
+    return !!this.getAccessToken()
   }
 }
 
