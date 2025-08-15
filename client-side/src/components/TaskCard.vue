@@ -15,7 +15,7 @@
         <h3 class="font-bold text-[16px]">{{ task.title }}</h3>
         <p class="text-[14px] text-[#747474] leading-relaxed">{{ task.description || 'No description available' }}</p>
       </div>
-      <img :src="task.image || '/src/assets/avatar1.png'" :alt="task.title" class="w-[88px] h-[88px] rounded-xl overflow-hidden object-cover mt-5">
+      <img :src="task.image || '/src/assets/avatar.png'" :alt="task.title" class="w-[88px] h-[88px] rounded-xl overflow-hidden object-cover mt-5">
     </div>
 
     <!-- Bottom Section - Metadata -->

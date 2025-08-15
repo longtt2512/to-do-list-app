@@ -1,23 +1,26 @@
 <template>
-  <div class="relative w-[300px] h-full overflow-hidden flex-shrink-0">
+  <div class="relative w-[300px] h-full flex-shrink-0">
     <!-- Two background halves -->
-    <div class="absolute inset-x-0 top-0 h-[100px] bg-gray-100"></div>
-    <div class="absolute inset-x-0 top-[100px] bottom-0 bg-primary"></div>
+    <div class="absolute inset-x-0 top-0 h-[70px] bg-gray-100"></div>
+    <div class="absolute inset-x-0 top-[70px] bottom-0 bg-primary rounded-r-lg menu shadow-[0_4px_12px_0_#00000014]"></div>
 
     <!-- Profile image centered between the two divisions -->
     <img
-      src="/src/assets/avatar1.png"
+      src="/src/assets/avatar.png"
       alt="Profile"
-      class="absolute left-1/2 top-[100px] -translate-x-1/2 -translate-y-1/2 w-24 h-24 rounded-full object-cover border-4 border-white shadow-lg z-20"
+      class="absolute left-1/2 top-[70px] -translate-x-1/2 -translate-y-1/2 w-[86px] h-[86px] rounded-full object-cover border-1 border-white shadow-lg z-20"
     />
 
     <!-- Content overlay -->
     <div class="relative z-10 text-sidebar p-6 flex flex-col h-full">
-      <!-- Optional: user info (kept minimal to preserve layout) -->
-      <div class="h-[170px]"></div>
+      <!-- User info under avatar -->
+      <div class="pt-[120px] text-center">
+        <div class="font-bold text-sidebar">Sundar Gurung</div>
+        <div class="text-sm text-sidebar-secondary">sundar@example.com</div>
+      </div>
 
       <!-- Menu Items -->
-      <nav class="space-y-3">
+      <nav class="space-y-3 mt-6">
         <router-link to="/" class="flex items-center py-3 px-3 rounded hover-primary transition-colors">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" class="mr-3">
             <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -25,15 +28,7 @@
           </svg>
           Dashboard
         </router-link>
-        
-        <router-link to="/vital-tasks" class="flex items-center py-3 px-3 rounded hover-primary transition-colors">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" class="mr-3">
-            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            <polyline points="22,4 12,14.01 9,11.01" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-          Vital Task
-        </router-link>
-        
+
         <router-link to="/tasks" class="flex items-center py-3 px-3 rounded hover-primary transition-colors">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" class="mr-3">
             <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>

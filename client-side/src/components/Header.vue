@@ -1,9 +1,9 @@
 <template>
   <header class="bg-header h-header shadow-sm w-full">
-    <div class="px-6 h-full flex items-center justify-between">
+    <div class="px-16 h-full flex items-center justify-between">
       <div class="flex items-center">
-        <h1 class="text-xl font-bold">
-          <span class="text-primary">To</span><span class="text-black">-Do</span>
+        <h1 class="text-3xl font-bold">
+          <span class="text-primary">Dash</span><span class="text-black">Board</span>
         </h1>
       </div>
       

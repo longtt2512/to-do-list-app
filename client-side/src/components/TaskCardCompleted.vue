@@ -27,7 +27,7 @@
 
         <span class="text-[10px] text-[#A1A3AB]">Completed 2 days ago.</span>
       </div>
-      <img :src="task.image || '/src/assets/avatar1.png'" :alt="task.title"
+      <img :src="task.image || '/src/assets/avatar.png'" :alt="task.title"
         class="w-[88px] h-[88px] rounded-xl overflow-hidden object-cover mt-5">
     </div>
   </div>

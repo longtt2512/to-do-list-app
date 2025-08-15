@@ -2,9 +2,9 @@
   <div class="h-screen flex flex-col">
     <Header />
     <main class="flex-1 flex">
-      <Sidebar class="hidden md:block" />
+      <Sidebar class="hidden md:block relative z-20" />
       <div class="flex-1 flex flex-col">
-        <div class="flex-1 p-6">
+        <div class="flex-1 menu-container">
           <router-view />
         </div>
         <Footer theme="light" />
@@ -23,3 +23,10 @@ export default {
   components: { Sidebar, Header, Footer }
 }
 </script>
+
+<style scoped>
+.menu-container {
+  padding-top: 70px;
+  padding-bottom: 30px;
+}
+</style>
