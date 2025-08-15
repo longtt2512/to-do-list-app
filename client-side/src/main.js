@@ -13,5 +13,7 @@ app.use(pinia).use(router).use(i18n)
 // Initialize auth store from localStorage before mounting
 const auth = useAuthStore()
 auth.initFromStorage()
+// Ensure profile is loaded at first access (non-blocking)
+auth.fetchMyProfileIfNeeded?.()
 
 app.mount('#app')

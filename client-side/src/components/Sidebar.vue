@@ -90,8 +90,16 @@ export default {
   setup() {
     const auth = useAuthStore()
     const router = useRouter()
-    const displayName = computed(() => auth.user?.name || auth.user?.username || 'User')
-    const displayEmail = computed(() => auth.user?.email || '')
+
+    const displayName = computed(() => {
+      const p = auth.profile
+      const first = (p?.firstName || '').trim()
+      const last = (p?.lastName || '').trim()
+      const full = `${first} ${last}`.trim()
+      return full || auth.user?.name || auth.user?.username || 'User'
+    })
+
+    const displayEmail = computed(() => auth.profile?.email || auth.user?.email || '')
 
     const logout = () => {
       auth.clearAuth()

@@ -3,7 +3,7 @@
     <!-- Header Section -->
     <div class="flex justify-between items-center mb-5">
       <div class="flex items-center">
-        <h1 class="text-[36px] font-semibold mr-3">Welcome back, Sundar</h1>
+        <h1 class="text-[36px] font-semibold mr-3">Welcome back, {{ welcomeLastName }}</h1>
         <img src="../assets/icons/hand-wave.svg" alt="hand-wave" class="w-10 h-10">
       </div>
 
@@ -175,6 +175,7 @@
 <script>
 import TaskCard from '../components/TaskCard.vue'
 import TaskCardCompleted from '../components/TaskCardCompleted.vue'
+import { useAuthStore } from '@/stores/auth'
 export default {
   components: { TaskCard, TaskCardCompleted },
   data() {
@@ -335,6 +336,12 @@ export default {
     recent() { return this.tasks.slice().reverse().slice(0, 5) },
     todoTasks() {
       return this.tasks.filter(t => !t.done).slice(0, 3);
+    },
+    welcomeLastName() {
+      const auth = useAuthStore()
+      const last = (auth.profile?.lastName || '').trim()
+      // Fallbacks if profile is not yet loaded
+      return last || auth.user?.username || auth.user?.name || 'User'
     },
   },
   methods: {

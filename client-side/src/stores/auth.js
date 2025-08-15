@@ -23,6 +23,9 @@ export const useAuthStore = defineStore('auth', {
   state: () => ({
     accessToken: null,
     user: null, // extracted from JWT payload (e.g., sub, name, email, roles)
+    // ProfileResponse stored here once fetched
+    profile: null,
+    _profileLoaded: false, // internal flag to avoid duplicate fetches
   }),
   getters: {
     isAuthenticated: (state) => !!state.accessToken,
@@ -59,9 +62,51 @@ export const useAuthStore = defineStore('auth', {
         raw: payload,
       } : null
     },
+    setProfile(profile) {
+      // Store exactly the fields from ProfileResponse
+      this.profile = profile ? {
+        id: profile.id ?? null,
+        userId: profile.userId ?? null,
+        firstName: profile.firstName ?? null,
+        lastName: profile.lastName ?? null,
+        email: profile.email ?? null,
+        contactNumber: profile.contactNumber ?? null,
+        position: profile.position ?? null,
+        avatarKey: profile.avatarKey ?? null,
+        avatarUrl: profile.avatarUrl ?? null,
+        createdAt: profile.createdAt ?? null,
+        updatedAt: profile.updatedAt ?? null,
+        createdBy: profile.createdBy ?? null,
+        updatedBy: profile.updatedBy ?? null,
+      } : null
+      this._profileLoaded = true
+    },
+    async fetchMyProfileIfNeeded() {
+      if (!this.isAuthenticated) {
+        this.profile = null
+        this._profileLoaded = true
+        return null
+      }
+      if (this._profileLoaded && this.profile?.id) {
+        return this.profile
+      }
+      try {
+        const { getMyProfile } = await import('@/services/profile-service')
+        const data = await getMyProfile()
+        this.setProfile(data)
+        return this.profile
+      } catch (err) {
+        console.warn('fetchMyProfileIfNeeded failed:', err)
+        // Mark as attempted to avoid loops; keep profile as null on error
+        this._profileLoaded = true
+        return null
+      }
+    },
     clearAuth() {
       this.accessToken = null
       this.user = null
+      this.profile = null
+      this._profileLoaded = false
       try {
         localStorage.removeItem('accessToken')
         localStorage.removeItem('refreshToken')
