@@ -67,15 +67,39 @@
 
       <!-- Logout at bottom -->
       <div class="mt-auto">
-        <router-link to="/login" class="flex items-center py-3 px-3 rounded hover-primary transition-colors">
+        <button @click="logout" class="w-full text-left flex items-center py-3 px-3 rounded hover-primary transition-colors">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" class="mr-3">
             <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
             <polyline points="16,17 21,12 16,7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
             <line x1="21" y1="12" x2="9" y2="12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
           Logout
-        </router-link>
+        </button>
       </div>
     </div>
   </div>
 </template>
+
+<script>
+export default {
+  name: 'Sidebar',
+  methods: {
+    logout() {
+      try {
+        // Remove auth tokens
+        localStorage.removeItem('accessToken')
+        localStorage.removeItem('refreshToken')
+        // Remove common user-related data if present
+        localStorage.removeItem('user')
+        localStorage.removeItem('profile')
+        localStorage.removeItem('username')
+        localStorage.removeItem('email')
+      } catch (e) {
+        // ignore storage errors
+      }
+      // Redirect to login route
+      this.$router.push('/login')
+    }
+  }
+}
+</script>
