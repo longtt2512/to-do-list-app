@@ -8,7 +8,7 @@
       :placeholder="placeholder"
       :value="modelValue"
       @input="$emit('update:modelValue', $event.target.value)"
-      :class="['text-input', { 'with-icon': icon }]"
+      :class="['input', { 'with-icon': icon }]"
       v-bind="$attrs"
     />
   </div>
@@ -16,7 +16,7 @@
 
 <script>
 export default {
-  name: 'TextInput',
+  name: 'Input',
   inheritAttrs: false,
   emits: ['update:modelValue'],
   props: {
@@ -62,7 +62,7 @@ export default {
   opacity: 1;
 }
 
-.text-input {
+.input {
   width: 100%;
   padding: 16px;
   border: 1px solid #565454;
@@ -73,16 +73,16 @@ export default {
   transition: border-color 0.2s ease;
 }
 
-.text-input.with-icon {
+.input.with-icon {
   padding-left: 52px;
 }
 
-.text-input:focus {
+.input:focus {
   outline: none;
   border-color: #FF6767;
 }
 
-.text-input::placeholder {
+.input::placeholder {
   color: #565454;
   opacity: 0.7 ;
 }

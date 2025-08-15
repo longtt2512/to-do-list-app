@@ -6,12 +6,12 @@
       </div>
       <div class="login-form">
         <h2 class="title">Sign Up</h2>
-        <TextInput v-model="firstname" type="text" placeholder="First Name" :icon="editNameIcon" />
-        <TextInput v-model="lastname" type="text" placeholder="Last Name" :icon="editNameIcon" />
-        <TextInput v-model="username" type="text" placeholder="Username" :icon="userIcon" />
-        <TextInput v-model="email" type="email" placeholder="Email" :icon="emailIcon" />
-        <TextInput v-model="password" type="password" placeholder="Password" :icon="passwordIcon" />
-        <TextInput v-model="confirmpassword" type="password" placeholder="Confirm Password" :icon="passwordOutlineIcon" />
+        <Input v-model="firstname" type="text" placeholder="First Name" :icon="editNameIcon" />
+        <Input v-model="lastname" type="text" placeholder="Last Name" :icon="editNameIcon" />
+        <Input v-model="username" type="text" placeholder="Username" :icon="userIcon" />
+        <Input v-model="email" type="email" placeholder="Email" :icon="emailIcon" />
+        <Input v-model="password" type="password" placeholder="Password" :icon="passwordIcon" />
+        <Input v-model="confirmpassword" type="password" placeholder="Confirm Password" :icon="passwordOutlineIcon" />
         <div v-if="errorMessage" class="error-message">
           {{ errorMessage }}
         </div>
@@ -30,13 +30,13 @@
 
 <script>
 import Button from '@/components/Button.vue'
-import TextInput from '@/components/TextInput.vue'
+import Input from '@/components/Input.vue'
 import authService from '@/services/auth-service'
 
 export default {
   components: {
     Button,
-    TextInput
+    Input
   },
   data() {
     return { 
@@ -48,12 +48,47 @@ export default {
       confirmpassword: '',
       errorMessage: '',
       isLoading: false,
+      // Track if fields were interacted with (touched/dirty)
+      touched: {
+        firstname: false,
+        lastname: false,
+        username: false,
+        email: false,
+        password: false,
+        confirmpassword: false,
+      },
       editNameIcon: new URL('@/assets/icons/edit-name.svg', import.meta.url).href,
       userIcon: new URL('@/assets/icons/user.svg', import.meta.url).href,
       emailIcon: new URL('@/assets/icons/baseline-email.svg', import.meta.url).href,
       passwordIcon: new URL('@/assets/icons/password.svg', import.meta.url).href,
       passwordOutlineIcon: new URL('@/assets/icons/password-outline.svg', import.meta.url).href
     };
+  },
+  watch: {
+    firstname(val) {
+      this.touched.firstname = true;
+      if (this.errorMessage) this.errorMessage = '';
+    },
+    lastname(val) {
+      this.touched.lastname = true;
+      if (this.errorMessage) this.errorMessage = '';
+    },
+    username(val) {
+      this.touched.username = true;
+      if (this.errorMessage) this.errorMessage = '';
+    },
+    email(val) {
+      this.touched.email = true;
+      if (this.errorMessage) this.errorMessage = '';
+    },
+    password(val) {
+      this.touched.password = true;
+      if (this.errorMessage) this.errorMessage = '';
+    },
+    confirmpassword(val) {
+      this.touched.confirmpassword = true;
+      if (this.errorMessage) this.errorMessage = '';
+    }
   },
   methods: {
     validateForm() {

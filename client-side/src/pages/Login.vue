@@ -3,13 +3,13 @@
     <div class="login-container">
       <div class="login-form">
         <h2 class="title">Sign In</h2>
-        <TextInput 
+        <Input
           v-model="username" 
           type="text" 
           placeholder="Username" 
           :icon="userIcon" 
         />
-        <TextInput 
+        <Input
           v-model="password" 
           type="password" 
           placeholder="Password"
@@ -40,13 +40,13 @@
 
 <script>
 import Button from '@/components/Button.vue'
-import TextInput from '@/components/TextInput.vue'
+import Input from '@/components/Input.vue'
 import authService from '@/services/auth-service'
 
 export default {
   components: {
     Button,
-    TextInput
+    Input
   },
   data() {
     return { 
@@ -54,9 +54,24 @@ export default {
       password: "",
       errorMessage: "",
       isLoading: false,
+      // Track if fields were interacted with (touched/dirty)
+      touched: {
+        username: false,
+        password: false,
+      },
       userIcon: new URL('@/assets/icons/user.svg', import.meta.url).href,
       passwordIcon: new URL('@/assets/icons/password.svg', import.meta.url).href
     };
+  },
+  watch: {
+    username(val) {
+      this.touched.username = true;
+      if (this.errorMessage) this.errorMessage = "";
+    },
+    password(val) {
+      this.touched.password = true;
+      if (this.errorMessage) this.errorMessage = "";
+    }
   },
   methods: {
     async login() {
