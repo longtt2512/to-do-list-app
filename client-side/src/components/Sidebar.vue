@@ -15,8 +15,8 @@
     <div class="relative z-10 text-sidebar p-6 flex flex-col h-full">
       <!-- User info under avatar -->
       <div class="pt-[120px] text-center">
-        <div class="font-bold text-sidebar">Sundar Gurung</div>
-        <div class="text-sm text-sidebar-secondary">sundar@example.com</div>
+        <div class="font-bold text-sidebar">{{ displayName }}</div>
+        <div class="text-sm text-sidebar-secondary">{{ displayEmail }}</div>
       </div>
 
       <!-- Menu Items -->
@@ -81,25 +81,24 @@
 </template>
 
 <script>
+import { useAuthStore } from '@/stores/auth'
+import { computed } from 'vue'
+import { useRouter } from 'vue-router'
+
 export default {
   name: 'Sidebar',
-  methods: {
-    logout() {
-      try {
-        // Remove auth tokens
-        localStorage.removeItem('accessToken')
-        localStorage.removeItem('refreshToken')
-        // Remove common user-related data if present
-        localStorage.removeItem('user')
-        localStorage.removeItem('profile')
-        localStorage.removeItem('username')
-        localStorage.removeItem('email')
-      } catch (e) {
-        // ignore storage errors
-      }
-      // Redirect to login route
-      this.$router.push('/login')
+  setup() {
+    const auth = useAuthStore()
+    const router = useRouter()
+    const displayName = computed(() => auth.user?.name || auth.user?.username || 'User')
+    const displayEmail = computed(() => auth.user?.email || '')
+
+    const logout = () => {
+      auth.clearAuth()
+      router.push('/login')
     }
+
+    return { auth, displayName, displayEmail, logout }
   }
 }
 </script>

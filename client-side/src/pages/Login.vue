@@ -42,6 +42,7 @@
 import Button from '@/components/Button.vue'
 import Input from '@/components/Input.vue'
 import authService from '@/services/auth-service'
+import { useAuthStore } from '@/stores/auth'
 
 export default {
   components: {
@@ -75,6 +76,7 @@ export default {
   },
   methods: {
     async login() {
+      const auth = useAuthStore()
       if (!this.username || !this.password) {
         this.errorMessage = "Please enter both username and password";
         return;
@@ -92,8 +94,8 @@ export default {
         if (result.success && result.status === 200) {
           const { accessToken, refreshToken } = result.data || {}
           if (accessToken && refreshToken) {
-            // Tokens already saved in authService.login, but ensure presence
-            localStorage.setItem("user", JSON.stringify({ username: this.username }));
+            // Tokens already saved in authService.login
+            auth.initFromStorage()
             this.$router.push("/");
           } else {
             this.errorMessage = "Login failed: No token received";
