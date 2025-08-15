@@ -4,6 +4,18 @@ const getBaseURL = () => {
   return import.meta.env.VITE_API_URL || 'http://nhom4.choi.one:8081'
 }
 
+// Resolve preferred locale for API calls
+// Priority: explicitly saved app locale -> browser locale -> 'en'
+const resolveLocale = () => {
+  try {
+    const saved = localStorage.getItem('locale') || localStorage.getItem('lang')
+    const locale = (saved || navigator.language || navigator.userLanguage || 'en')
+    return locale
+  } catch {
+    return 'en'
+  }
+}
+
 const createApiClient = () => {
   const client = axios.create({
     baseURL: getBaseURL(),
@@ -13,13 +25,22 @@ const createApiClient = () => {
     },
   })
 
-  // Attach accessToken as Bearer for every request
+  // Attach accessToken and locale for every request
   client.interceptors.request.use((config) => {
+    config.headers = config.headers || {}
+
+    // Bearer token
     const token = localStorage.getItem('accessToken')
     if (token) {
-      config.headers = config.headers || {}
       config.headers.Authorization = `Bearer ${token}`
     }
+
+    // Locale header for backend i18n
+    const locale = resolveLocale()
+    if (locale) {
+      config.headers['Accept-Language'] = locale
+    }
+
     return config
   })
 

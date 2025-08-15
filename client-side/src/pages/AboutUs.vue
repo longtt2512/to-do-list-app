@@ -351,7 +351,7 @@ export default {
   },
   async mounted() {
     // Load saved language preference
-    const savedLanguage = localStorage.getItem("preferred-language");
+    const savedLanguage = localStorage.getItem("locale");
     if (savedLanguage && (savedLanguage === "en" || savedLanguage === "vi")) {
       this.$i18n.locale = savedLanguage;
     }
@@ -394,7 +394,7 @@ export default {
     changeLanguage(lang) {
       this.$i18n.locale = lang;
       // Save language preference to localStorage
-      localStorage.setItem("preferred-language", lang);
+      localStorage.setItem("locale", lang);
     },
   },
 };

@@ -2,9 +2,10 @@ export const authService = {
   async login(credentials) {
     try {
       const baseUrl = import.meta.env.VITE_API_URL || 'http://nhom4.choi.one:8081'
+      const locale = (localStorage.getItem('locale') || localStorage.getItem('lang') || navigator.language || 'en')
       const res = await fetch(`${baseUrl}/auth/login`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', 'Accept-Language': locale },
         body: JSON.stringify({
           username: credentials.username,
           password: credentials.password
@@ -53,9 +54,10 @@ export const authService = {
 
       // Use fetch here to preserve HTTP status (Axios interceptor in base-api strips it)
       const baseUrl = import.meta.env.VITE_API_URL || 'http://nhom4.choi.one:8081'
+      const locale = (localStorage.getItem('locale') || localStorage.getItem('lang') || navigator.language || 'en')
       const res = await fetch(`${baseUrl}/auth/signup`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', 'Accept-Language': locale },
         body: JSON.stringify(payload)
       })
 
