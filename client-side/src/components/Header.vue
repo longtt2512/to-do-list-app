@@ -7,7 +7,7 @@
         </h1>
       </div>
       
-      <div class="flex items-center bg-search rounded-lg px-4 shadow-sm h-[36px] w-full max-w-[700px] mx-8">
+      <div class="flex items-center bg-search rounded-lg px-4 pr-0 shadow-sm h-[36px] w-full max-w-[700px] mx-8">
         <input 
           type="text" 
           placeholder="Search your task here…" 

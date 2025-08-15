@@ -1,6 +1,6 @@
 <template>
   <button 
-    class="w-[36px] h-[36px] max-w-full max-h-full bg-primary rounded-lg flex items-center justify-center border-2 border-gray-300 hover:opacity-80 transition-opacity"
+    class="min-w-[36px] min-h-[36px] max-w-full max-h-full bg-primary rounded-lg flex items-center justify-center border-2 border-gray-300 hover:opacity-80 transition-opacity"
     @click="$emit('click')"
   >
     <img 
@@ -18,7 +18,6 @@ export default {
     icon: {
       type: String,
       required: true,
-      validator: (value) => ['search', 'calendar', 'notification'].includes(value)
     },
     alt: {
       type: String,
