@@ -1,10 +1,8 @@
 spring:
-  profiles:
-    active: prod
   datasource:
     url: jdbc:postgresql://nhom4.choi.one:5432/appdb
     username: appuser1
-    password: ***********
+    password: secretpassword123
     driver-class-name: org.postgresql.Driver
 
 minio:

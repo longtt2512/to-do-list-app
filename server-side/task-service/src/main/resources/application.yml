@@ -28,6 +28,11 @@ spring:
     baseline-on-migrate: true
     clean-disabled: true
 
+  messages:
+    basename: messages
+    encoding: UTF-8
+    fallback-to-system-locale: false
+
 security:
   jwt:
     access-secret-b64:  "rXzZ72WfTUG6mhO7r9wZ69qJ5S8N2duU2to9Nw5a3mY="

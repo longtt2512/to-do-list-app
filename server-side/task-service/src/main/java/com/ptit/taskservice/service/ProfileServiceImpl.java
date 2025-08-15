@@ -42,14 +42,16 @@ public class ProfileServiceImpl implements ProfileService {
   private final FileService files;
   private final PasswordEncoder encoder;
   private final RoleRepository roleRepository;
+  private final MessageService messageService;
   private final Duration presignExpiry = Duration.ofMinutes(15); // tweak or inject from config
 
-  public ProfileServiceImpl(UserRepository userRepository, UserProfileRepository profiles, FileService files, PasswordEncoder encoder, RoleRepository roleRepository) {
+  public ProfileServiceImpl(UserRepository userRepository, UserProfileRepository profiles, FileService files, PasswordEncoder encoder, RoleRepository roleRepository, MessageService messageService) {
     this.userRepository = userRepository;
     this.profiles = profiles;
     this.files = files;
     this.encoder = encoder;
     this.roleRepository = roleRepository;
+    this.messageService = messageService;
   }
 
   @Transactional(readOnly = true)
@@ -127,14 +129,14 @@ public class ProfileServiceImpl implements ProfileService {
 
     // 1) confirm password
     if (!req.password().equals(req.confirmPassword())) {
-      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Password confirmation does not match");
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, messageService.getMessage("register.password.confirmation.mismatch"));
     }
 
     // 2) unique username (and optionally email—see note below)
     if (userRepository.existsByUsername(req.username())) {
-      throw new ResponseStatusException(HttpStatus.CONFLICT, "Username is already taken");
+      throw new ResponseStatusException(HttpStatus.CONFLICT, messageService.getMessage("register.username.already.taken"));
     }
-    Role userRole = roleRepository.findByName("ROLE_USER").orElseThrow(() -> new NoSuchElementException("Role USER not found"));
+    Role userRole = roleRepository.findByName("ROLE_USER").orElseThrow(() -> new NoSuchElementException(messageService.getMessage("error.role.not.found")));
     // 3) create user
     User user = new User();
     user.setUsername(req.username());
@@ -145,7 +147,7 @@ public class ProfileServiceImpl implements ProfileService {
       userRepository.save(user);
     } catch (DataIntegrityViolationException e) {
       // Covers race conditions on unique constraints
-      throw new ResponseStatusException(HttpStatus.CONFLICT, "Username is already taken", e);
+      throw new ResponseStatusException(HttpStatus.CONFLICT, messageService.getMessage("register.username.already.taken"), e);
     }
 
     // 4) create profile
@@ -167,10 +169,10 @@ public class ProfileServiceImpl implements ProfileService {
   private User currentUser() {
     Authentication auth = SecurityContextHolder.getContext().getAuthentication();
     if (auth == null || !auth.isAuthenticated() || "anonymousUser".equals(auth.getPrincipal())) {
-      throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Not authenticated");
+      throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, messageService.getMessage("auth.not.authenticated"));
     }
     String username = auth.getName();
-    return userRepository.findByUsername(username).orElseThrow(() -> new NoSuchElementException("User not found"));
+    return userRepository.findByUsername(username).orElseThrow(() -> new NoSuchElementException(messageService.getMessage("error.user.not.found")));
   }
 
   private ProfileResponse toDto(UserProfile p) {

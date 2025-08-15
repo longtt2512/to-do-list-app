@@ -1,5 +1,6 @@
 package com.ptit.taskservice.controller;
 
+import com.ptit.taskservice.service.MessageService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -23,6 +24,12 @@ import org.springframework.security.core.AuthenticationException;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+  private final MessageService messageService;
+
+  public GlobalExceptionHandler(MessageService messageService) {
+    this.messageService = messageService;
+  }
+
   // --- Login failures / bad password ---
   @ExceptionHandler(BadCredentialsException.class)
   public ResponseEntity<ApiError> handleBadCredentials(BadCredentialsException ex, HttpServletRequest req) {
@@ -30,7 +37,7 @@ public class GlobalExceptionHandler {
     // Generic message to avoid user enumeration
     return ResponseEntity.status(status).body(
         new ApiError(Instant.now(), status.value(), status.getReasonPhrase(),
-            "Invalid username or password", req.getRequestURI(), null)
+            messageService.getMessage("auth.invalid.credentials"), req.getRequestURI(), null)
     );
   }
 
@@ -40,7 +47,7 @@ public class GlobalExceptionHandler {
     HttpStatus status = HttpStatus.UNAUTHORIZED;
     return ResponseEntity.status(status).body(
         new ApiError(Instant.now(), status.value(), status.getReasonPhrase(),
-            "Authentication failed", req.getRequestURI(), null)
+            messageService.getMessage("auth.failed"), req.getRequestURI(), null)
     );
   }
 
@@ -70,7 +77,7 @@ public class GlobalExceptionHandler {
         .toList();
     return ResponseEntity.status(status).body(
         new ApiError(Instant.now(), status.value(), status.getReasonPhrase(),
-            "Validation failed", req.getRequestURI(), fields)
+            messageService.getMessage("validation.failed"), req.getRequestURI(), fields)
     );
   }
 
@@ -79,7 +86,7 @@ public class GlobalExceptionHandler {
     HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
     return ResponseEntity.status(status).body(
         new ApiError(Instant.now(), status.value(), status.getReasonPhrase(),
-            "Unexpected error", req.getRequestURI(), null)
+            messageService.getMessage("error.unexpected"), req.getRequestURI(), null)
     );
   }
 

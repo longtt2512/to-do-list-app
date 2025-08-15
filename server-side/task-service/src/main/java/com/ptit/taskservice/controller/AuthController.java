@@ -7,6 +7,7 @@ import com.ptit.taskservice.dto.request.SignupRequest;
 import com.ptit.taskservice.dto.response.SignupResponse;
 import com.ptit.taskservice.dto.response.TokenPair;
 import com.ptit.taskservice.service.JwtService;
+import com.ptit.taskservice.service.MessageService;
 import com.ptit.taskservice.service.PasswordChangeService;
 import com.ptit.taskservice.service.ProfileService;
 import jakarta.validation.Valid;
@@ -36,14 +37,16 @@ public class AuthController {
   private final PasswordChangeService passwordChangeService;
   private final ProfileService profileService;
   private final ServerProperties serverProperties;
+  private final MessageService messageService;
 
-  public AuthController(AuthenticationManager authManager, JwtService jwt, UserDetailsService userDetailsService, PasswordChangeService passwordChangeService, ProfileService profileService, ServerProperties serverProperties) {
+  public AuthController(AuthenticationManager authManager, JwtService jwt, UserDetailsService userDetailsService, PasswordChangeService passwordChangeService, ProfileService profileService, ServerProperties serverProperties, MessageService messageService) {
     this.authManager = authManager;
     this.jwt = jwt;
     this.userDetailsService = userDetailsService;
     this.passwordChangeService = passwordChangeService;
     this.profileService = profileService;
     this.serverProperties = serverProperties;
+    this.messageService = messageService;
   }
 
   @PostMapping("/login")
@@ -60,7 +63,7 @@ public class AuthController {
   public TokenPair refresh(@RequestBody RefreshTokenRequest body) {
     String refreshToken = body.refreshToken();
     if (!jwt.isRefreshTokenValid(refreshToken)) {
-      throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid refresh token");
+      throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, messageService.getMessage("auth.invalid.refresh.token"));
     }
     // Get username from refresh token, load user to ensure still active + get current roles
     String username = jwt.extractUsernameFromRefresh(refreshToken);
