@@ -17,6 +17,8 @@
     --search-bg: #ffffff;
     --text-primary: #000000;
     --text-secondary: #6b7280;
+    --primary-button-color: #F24E1E;
+    --primary-button-hover-color: #ff3f00;
   }
   
   html {
@@ -75,4 +77,16 @@ body {
   .hover-primary:hover {
     background-color: var(--primary-hover);
   }
+    
+  .bg-primary {
+        background-color: var(--primary-color);
+  }
+
+    .bg-button-primary {
+        background-color: var(--primary-button-color);
+    }
+
+    .bg-button-primary:hover {
+        background-color: var(--primary-button-hover-color);
+    }
 }

@@ -144,7 +144,7 @@
               <span class="text-gray-600">In Progress</span>
             </div>
             <div class="flex items-center space-x-2">
-              <div class="w-2 h-2 bg-red-500 rounded-full"></div>
+              <div class="w-2 h-2 bg-primary rounded-full"></div>
               <span class="text-gray-600">Not Started</span>
             </div>
           </div>

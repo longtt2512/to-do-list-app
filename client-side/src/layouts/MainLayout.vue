@@ -1,28 +1,37 @@
 <template>
   <div class="h-screen flex flex-col">
-    <Header />
+    <Header/>
     <main class="flex-1 flex">
-      <Sidebar class="hidden md:block relative z-20" />
+      <Sidebar class="hidden md:block relative z-20"/>
       <div class="flex-1 flex flex-col">
         <div class="flex-1 menu-container">
-          <router-view />
+          <router-view/>
         </div>
-        <Footer theme="light" />
       </div>
     </main>
+  <Footer theme="light"/>
   </div>
 </template>
 
-<script>
+<script setup>
 import Sidebar from '../components/Sidebar.vue'
 import Header from '../components/Header.vue'
 import Footer from '../components/Footer.vue'
+import {useRouter} from 'vue-router'
+import {provide} from 'vue'
 
-export default {
-  name: 'MainLayout',
-  components: { Sidebar, Header, Footer }
+const router = useRouter()
+
+const goBack = () => {
+  if (window.history.length > 1) {
+    router.back()
+  } else {
+    router.push('/')
+  }
 }
+provide('goBack', goBack)
 </script>
+
 
 <style scoped>
 .menu-container {
