@@ -183,144 +183,141 @@ import {ref, onMounted, nextTick, inject} from 'vue'
 import {categoryService} from '@/services/category-service'
 
 const goBack = inject('goBack')
-if (!goBack) {
-    console.warn('⚠️ goBack không được inject. Kiểm tra MainLayout.vue có phải cha trực tiếp không!')
-}
-// Reactive data
+
 const categories = ref([])
-
-// Modal states
-const showCategoryModal = ref(false)
-const showItemModal = ref(false)
-const showDeleteModal = ref(false)
-
-// Form states
-const categoryForm = ref({
-    categoryName: '',
-    values: [
-        {value: '', sortOrder: 0}
-    ],
-    error: ''
-})
-
-const itemForm = ref({name: '', error: '', categoryId: 0})
-const deleteModal = ref({message: '', type: '', categoryId: 0, itemId: 0})
-
-// Editing states
-const editingCategory = ref(null)
-const editingItem = ref(null)
-
-// Emits
 const emit = defineEmits(['categoriesUpdated'])
 
-// Load initial data
+// Inline editing states
+const editingInlineItem = ref({
+    categoryId: null,
+    itemId: null,
+    newValue: '',
+    originalValue: ''
+})
+
+// Delete modal states
+const showDeleteModal = ref(false)
+const deleteModal = ref({
+    message: '',
+    type: '',
+    categoryId: null,
+    itemId: 0
+})
+
 onMounted(async () => {
+    await loadCategories()
+})
+
+const loadCategories = async () => {
     try {
-        const response = await categoryService.getAll();
+        const response = await categoryService.getAll()
         if (response.success) {
             categories.value = await Promise.all(
                 response.data.map(async (category) => {
-                    const itemsResponse = await categoryService.getCategoryById(category.id);
+                    const itemsResponse = await categoryService.getCategoryById(category.id)
                     return {
                         ...category,
                         items: itemsResponse.success ? itemsResponse.data : []
-                    };
+                    }
                 })
-            );
+            )
+            emit('categoriesUpdated', categories.value)
         }
     } catch (err) {
-        console.error(err)
-    }
-})
-
-// Helpers
-const resetItemForm = () => {
-    itemForm.value = {name: '', error: '', categoryId: 0}
-    editingItem.value = null
-}
-const resetDeleteModal = () => {
-    deleteModal.value = {message: '', type: '', categoryId: 0, itemId: 0}
-}
-
-// Category modal
-
-
-const resetCategoryForm = () => {
-    categoryForm.value = {categoryName: '', values: [{value: '', sortOrder: 0}], error: ''}
-    editingCategory.value = null
-}
-
-
-const editCategoryValueText = (categoryId) => {
-    const category = categories.value.find(c => c.id === categoryId)
-    if (category) {
-        categoryForm.value.name = category.categoryName
-        editingCategory.value = categoryId
-        showCategoryModal.value = true
-        nextTick(() => document.querySelector('#categoryNameInput')?.focus())
+        console.error('Error loading categories:', err)
     }
 }
-const closeCategoryModal = () => {
-    showCategoryModal.value = false
-    resetCategoryForm()
-}
-const saveCategoryModal = async () => {
-    if (!categoryForm.value.categoryName.trim()) {
-        categoryForm.value.error = 'Category name is required'
-        return
+
+// Inline editing functions
+const startInlineEdit = (categoryId, itemId, currentValue) => {
+    editingInlineItem.value = {
+        categoryId,
+        itemId,
+        newValue: currentValue,
+        originalValue: currentValue
     }
-    if (categoryForm.value.values.length === 0 || categoryForm.value.values.some(v => !v.value.trim())) {
-        categoryForm.value.error = 'All values must be filled'
+    nextTick(() => {
+        const input = document.querySelector('input[ref="inlineEditInput"]')
+        if (input) {
+            input.focus()
+            input.select()
+        }
+    })
+}
+
+const cancelInlineEdit = () => {
+    editingInlineItem.value = {
+        categoryId: null,
+        itemId: null,
+        newValue: '',
+        originalValue: ''
+    }
+}
+
+const saveInlineEdit = async () => {
+    if (!editingInlineItem.value.newValue.trim()) {
+        editingInlineItem.value.newValue = editingInlineItem.value.originalValue
         return
     }
 
-    const payload = {
-        categoryName: categoryForm.value.categoryName.trim(),
-        values: categoryForm.value.values.map((v, i) => ({
-            value: v.value.trim(),
-            sortOrder: i
-        }))
+    if (editingInlineItem.value.newValue === editingInlineItem.value.originalValue) {
+        cancelInlineEdit()
+        return
     }
 
     try {
-        if (editingCategory.value) {
-            await categoryService.updateCategory(editingCategory.value, payload)
+        const categoryResponse = await categoryService.getCategoryById(editingInlineItem.value.categoryId)
+        if (!categoryResponse.success) {
+            throw new Error('Failed to get category data')
+        }
+
+        const category = categories.value.find(c => c.id === editingInlineItem.value.categoryId)
+        if (!category) {
+            throw new Error('Category not found')
+        }
+
+        const updatedItems = categoryResponse.data.map(item => {
+            if (item.id === editingInlineItem.value.itemId) {
+                return {
+                    value: editingInlineItem.value.newValue.trim(),
+                    sortOrder: item.sortOrder
+                }
+            }
+            return {
+                value: item.value,
+                sortOrder: item.sortOrder
+            }
+        })
+
+        const updateData = {
+            categoryName: category.categoryName,
+            values: updatedItems
+        }
+
+        const response = await categoryService.updateCategory(editingInlineItem.value.categoryId, updateData)
+
+        if (response.success) {
+            const categoryIndex = categories.value.findIndex(c => c.id === editingInlineItem.value.categoryId)
+            if (categoryIndex !== -1) {
+                const itemIndex = categories.value[categoryIndex].items.findIndex(i => i.id === editingInlineItem.value.itemId)
+                if (itemIndex !== -1) {
+                    categories.value[categoryIndex].items[itemIndex].value = editingInlineItem.value.newValue.trim()
+                }
+            }
+            
+            emit('categoriesUpdated', categories.value)
+            cancelInlineEdit()
         } else {
-            await categoryService.createCategory(payload)
+            editingInlineItem.value.newValue = editingInlineItem.value.originalValue
+            console.error('Failed to update item:', response.error)
         }
-        emit('categoriesUpdated')
-        closeCategoryModal()
-    } catch (err) {
-        categoryForm.value.error = err
+    } catch (error) {
+        editingInlineItem.value.newValue = editingInlineItem.value.originalValue
+        console.error('Error updating item:', error)
     }
 }
 
-// Item modal
-const openAddItemModal = (categoryId) => {
-    resetItemForm()
-    itemForm.value.categoryId = categoryId
-    showItemModal.value = true
-    nextTick(() => document.querySelector('#itemNameInput')?.focus())
-}
-
-const closeItemModal = () => {
-    showItemModal.value = false
-    resetItemForm()
-}
-
-const deleteCategoryValue = (categoryId) => {
-    const category = categories.value.find(c => c.id === categoryId)
-    if (category) {
-        deleteModal.value = {
-            message: `Delete "${category.categoryName}" and all its items?`,
-            type: 'category',
-            categoryId,
-            itemId: 0
-        }
-        showDeleteModal.value = true
-    }
-}
-
+// Delete functions
 const openDeleteItemModal = (categoryId, itemId) => {
     const category = categories.value.find(c => c.id === categoryId)
     const item = category?.items.find(i => i.id === itemId)
@@ -337,21 +334,17 @@ const openDeleteItemModal = (categoryId, itemId) => {
 
 const closeDeleteModal = () => {
     showDeleteModal.value = false
-    resetDeleteModal()
+    deleteModal.value = {
+        message: '',
+        type: '',
+        categoryId: null,
+        itemId: 0
+    }
 }
+
 const confirmDelete = async () => {
     try {
-        if (deleteModal.value.type === 'category') {
-            // Xử lý delete category (giữ nguyên logic cũ)
-            const response = await categoryService.deleteCategory(deleteModal.value.categoryId)
-            if (response.success) {
-                categories.value = categories.value.filter(c => c.id !== deleteModal.value.categoryId)
-                emit('categoriesUpdated', categories.value)
-            } else {
-                console.error('Failed to delete category:', response.error)
-            }
-        } else if (deleteModal.value.type === 'item') {
-            
+        if (deleteModal.value.type === 'item') {
             const categoryResponse = await categoryService.getCategoryById(deleteModal.value.categoryId)
             if (!categoryResponse.success) {
                 console.error('Failed to get category data:', categoryResponse.error)
@@ -397,113 +390,6 @@ const confirmDelete = async () => {
     } catch (err) {
         console.error('Error in confirmDelete:', err)
         closeDeleteModal()
-    }
-}
-
-// Inline editing states
-const editingInlineItem = ref({
-    categoryId: null,
-    itemId: null,
-    newValue: '',
-    originalValue: ''
-})
-
-// Inline editing functions
-const startInlineEdit = (categoryId, itemId, currentValue) => {
-    editingInlineItem.value = {
-        categoryId,
-        itemId,
-        newValue: currentValue,
-        originalValue: currentValue
-    }
-    nextTick(() => {
-        const input = document.querySelector('input[ref="inlineEditInput"]')
-        if (input) {
-            input.focus()
-            input.select()
-        }
-    })
-}
-
-const cancelInlineEdit = () => {
-    editingInlineItem.value = {
-        categoryId: null,
-        itemId: null,
-        newValue: '',
-        originalValue: ''
-    }
-}
-
-const saveInlineEdit = async () => {
-    if (!editingInlineItem.value.newValue.trim()) {
-        // Reset to original value if empty
-        editingInlineItem.value.newValue = editingInlineItem.value.originalValue
-        return
-    }
-
-    if (editingInlineItem.value.newValue === editingInlineItem.value.originalValue) {
-        // No changes, just cancel
-        cancelInlineEdit()
-        return
-    }
-
-    try {
-        // Get current category data
-        const categoryResponse = await categoryService.getCategoryById(editingInlineItem.value.categoryId)
-        if (!categoryResponse.success) {
-            throw new Error('Failed to get category data')
-        }
-
-        // Get category name
-        const category = categories.value.find(c => c.id === editingInlineItem.value.categoryId)
-        if (!category) {
-            throw new Error('Category not found')
-        }
-
-        // Update the specific item and maintain sort orders
-        const updatedItems = categoryResponse.data.map(item => {
-            if (item.id === editingInlineItem.value.itemId) {
-                return {
-                    value: editingInlineItem.value.newValue.trim(),
-                    sortOrder: item.sortOrder
-                }
-            }
-            return {
-                value: item.value,
-                sortOrder: item.sortOrder
-            }
-        })
-
-        // Prepare update payload
-        const updateData = {
-            categoryName: category.categoryName,
-            values: updatedItems
-        }
-
-        // Update category through API
-        const response = await categoryService.updateCategory(editingInlineItem.value.categoryId, updateData)
-
-        if (response.success) {
-            // Update local data
-            const categoryIndex = categories.value.findIndex(c => c.id === editingInlineItem.value.categoryId)
-            if (categoryIndex !== -1) {
-                const itemIndex = categories.value[categoryIndex].items.findIndex(i => i.id === editingInlineItem.value.itemId)
-                if (itemIndex !== -1) {
-                    categories.value[categoryIndex].items[itemIndex].value = editingInlineItem.value.newValue.trim()
-                }
-            }
-            
-            emit('categoriesUpdated', categories.value)
-            cancelInlineEdit()
-        } else {
-            // Reset to original value on error
-            editingInlineItem.value.newValue = editingInlineItem.value.originalValue
-            console.error('Failed to update item:', response.error)
-        }
-    } catch (error) {
-        // Reset to original value on error
-        editingInlineItem.value.newValue = editingInlineItem.value.originalValue
-        console.error('Error updating item:', error)
     }
 }
 </script>

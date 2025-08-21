@@ -125,7 +125,6 @@ const loadCategoryData = async () => {
     }
 
     try {
-        // Get category basic info
         const categoriesResponse = await categoryService.getAll()
         if (!categoriesResponse.success) {
             throw new Error('Failed to load categories')
@@ -136,13 +135,11 @@ const loadCategoryData = async () => {
             throw new Error('Category not found')
         }
 
-        // Get category items
         const itemsResponse = await categoryService.getCategoryById(categoryId)
         if (!itemsResponse.success) {
             throw new Error('Failed to load category items')
         }
 
-        // Populate form with existing data
         form.value = {
             categoryName: category.categoryName,
             values: itemsResponse.data.length > 0 
@@ -188,7 +185,6 @@ const updateCategory = async () => {
         const response = await categoryService.updateCategory(categoryId, payload)
         
         if (response.success) {
-            // Redirect to categories page after successful update
             router.push('/categories')
         } else {
             form.value.error = response.error || 'Failed to update category'
