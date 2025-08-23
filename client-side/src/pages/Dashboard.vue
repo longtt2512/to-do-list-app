@@ -10,15 +10,16 @@
       <div class="flex items-center space-x-4">
         <!-- User Avatars -->
         <div class="flex space-x-1">
-          <div v-for="(member, index) in members.slice(0, 4)" :key="index" class="w-10 h-10 rounded-md overflow-hidden">
-            <img :src="member.avatar" :alt="member.name" class="w-full h-full object-cover">
+          <div v-for="(member, index) in members.slice(0, 3)" :key="index" class="w-10 h-10 rounded-md overflow-hidden">
+            <img :src="member?.avatarUrl" :alt="member?.name" class="w-full h-full object-cover">
           </div>
-          <div v-if="members.length > 4"
+          <div v-if="members.length > 3"
             class="relative w-10 h-10 rounded-md overflow-hidden flex items-center justify-center text-sm font-medium text-gray-600">
             <img
-              src="https://i2-vnexpress.vnecdn.net/2019/07/30/anh-thien-nhien-dep-thang-7-1564483719.jpg?w=1200&h=0&q=100&dpr=1&fit=crop&s=Nl3znv-VRtPyhJYhLwwRfA"
-              alt="plus" class="w-full h-full object-cover blur-[1px]">
+              :src="member?.avatarUrl"
+              alt="plus" class="w-full h-full object-cover" :class="{ 'blur-[1px]': members.length > 4 }">
             <span
+              v-if="members.length > 4"
               class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full text-sm font-medium text-white">
               +{{ members.length - 4 }}
             </span>
@@ -47,7 +48,7 @@
             <div>
               <h2 class="text-xl font-semibold text-[#FF6767]">To-Do</h2>
               <div class="text-sm">
-                <span class="text-[#000] mr-2">20 June</span>
+                <span class="text-[#000] mr-2">{{ todayDate }}</span>
                 <span class="text-gray-500">.Today</span>
               </div>
             </div>
@@ -84,53 +85,9 @@
 
           <!-- Progress Indicators -->
           <div class="grid grid-cols-3 gap-4 mb-6">
-            <div class="text-center">
-              <div class="relative w-16 h-16 mx-auto mb-2">
-                <svg class="w-16 h-16 transform -rotate-90" viewBox="0 0 36 36">
-                  <path class="text-gray-200" stroke="currentColor" stroke-width="2" fill="none"
-                    d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-                  <path class="text-green-500" stroke="currentColor" stroke-width="2" fill="none"
-                    stroke-dasharray="84, 100"
-                    d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-                </svg>
-                <div class="absolute inset-0 flex items-center justify-center">
-                  <span class="text-sm font-semibold text-green-600">84%</span>
-                </div>
-              </div>
-              <p class="text-sm text-green-600 font-medium">Completed</p>
-            </div>
-
-            <div class="text-center">
-              <div class="relative w-16 h-16 mx-auto mb-2">
-                <svg class="w-16 h-16 transform -rotate-90" viewBox="0 0 36 36">
-                  <path class="text-gray-200" stroke="currentColor" stroke-width="2" fill="none"
-                    d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-                  <path class="text-blue-500" stroke="currentColor" stroke-width="2" fill="none"
-                    stroke-dasharray="46, 100"
-                    d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-                </svg>
-                <div class="absolute inset-0 flex items-center justify-center">
-                  <span class="text-sm font-semibold text-blue-600">46%</span>
-                </div>
-              </div>
-              <p class="text-sm text-blue-600 font-medium">In Progress</p>
-            </div>
-
-            <div class="text-center">
-              <div class="relative w-16 h-16 mx-auto mb-2">
-                <svg class="w-16 h-16 transform -rotate-90" viewBox="0 0 36 36">
-                  <path class="text-gray-200" stroke="currentColor" stroke-width="2" fill="none"
-                    d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-                  <path class="text-red-500" stroke="currentColor" stroke-width="2" fill="none"
-                    stroke-dasharray="13, 100"
-                    d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-                </svg>
-                <div class="absolute inset-0 flex items-center justify-center">
-                  <span class="text-sm font-semibold text-red-600">13%</span>
-                </div>
-              </div>
-              <p class="text-sm text-red-600 font-medium">Not Started</p>
-            </div>
+            <ProgressIndicator :percent="84" status="completed" />
+            <ProgressIndicator :percent="46" status="in-progress" />
+            <ProgressIndicator :percent="13" status="not-started" />
           </div>
 
           <!-- Legend -->
@@ -175,167 +132,37 @@
 <script>
 import TaskCard from '../components/TaskCard.vue'
 import TaskCardCompleted from '../components/TaskCardCompleted.vue'
+import ProgressIndicator from '../components/ProgressIndicator.vue'
 import { useAuthStore } from '@/stores/auth'
+import { taskService } from '../services/task-service'
+import { getAllMembers } from '../services/member-service'
 export default {
-  components: { TaskCard, TaskCardCompleted },
+  components: { TaskCard, TaskCardCompleted, ProgressIndicator },
   data() {
     return {
-      members: [
-        {
-          name: 'Nguyen Van A',
-          avatar: 'https://i2-vnexpress.vnecdn.net/2019/07/30/anh-thien-nhien-dep-thang-7-1564483719.jpg?w=1200&h=0&q=100&dpr=1&fit=crop&s=Nl3znv-VRtPyhJYhLwwRfA',
-          email: 'nguyenvan@example.com',
-          phone: '0123456789',
-          address: '123 Nguyen Van Linh, Q9, TP.HCM',
-          dob: '1990-01-01',
-          gender: 'Male',
-        },
-        {
-          name: 'Nguyen Van A',
-          avatar: 'https://i2-vnexpress.vnecdn.net/2019/07/30/anh-thien-nhien-dep-thang-7-1564483719.jpg?w=1200&h=0&q=100&dpr=1&fit=crop&s=Nl3znv-VRtPyhJYhLwwRfA',
-          email: 'nguyenvan@example.com',
-          phone: '0123456789',
-          address: '123 Nguyen Van Linh, Q9, TP.HCM',
-          dob: '1990-01-01',
-          gender: 'Male',
-        },
-        {
-          name: 'Nguyen Van A',
-          avatar: 'https://i2-vnexpress.vnecdn.net/2019/07/30/anh-thien-nhien-dep-thang-7-1564483719.jpg?w=1200&h=0&q=100&dpr=1&fit=crop&s=Nl3znv-VRtPyhJYhLwwRfA',
-          email: 'nguyenvan@example.com',
-          phone: '0123456789',
-          address: '123 Nguyen Van Linh, Q9, TP.HCM',
-          dob: '1990-01-01',
-          gender: 'Male',
-        },
-        {
-          name: 'Nguyen Van A',
-          avatar: 'https://i2-vnexpress.vnecdn.net/2019/07/30/anh-thien-nhien-dep-thang-7-1564483719.jpg?w=1200&h=0&q=100&dpr=1&fit=crop&s=Nl3znv-VRtPyhJYhLwwRfA',
-          email: 'nguyenvan@example.com',
-          phone: '0123456789',
-          address: '123 Nguyen Van Linh, Q9, TP.HCM',
-          dob: '1990-01-01',
-          gender: 'Male',
-        },
-        {
-          name: 'Nguyen Van A',
-          avatar: 'https://i2-vnexpress.vnecdn.net/2019/07/30/anh-thien-nhien-dep-thang-7-1564483719.jpg?w=1200&h=0&q=100&dpr=1&fit=crop&s=Nl3znv-VRtPyhJYhLwwRfA',
-          email: 'nguyenvan@example.com',
-          phone: '0123456789',
-          address: '123 Nguyen Van Linh, Q9, TP.HCM',
-          dob: '1990-01-01',
-          gender: 'Male',
-        },
-        {
-          name: 'Nguyen Van A',
-          avatar: 'https://i2-vnexpress.vnecdn.net/2019/07/30/anh-thien-nhien-dep-thang-7-1564483719.jpg?w=1200&h=0&q=100&dpr=1&fit=crop&s=Nl3znv-VRtPyhJYhLwwRfA',
-          email: 'nguyenvan@example.com',
-          phone: '0123456789',
-          address: '123 Nguyen Van Linh, Q9, TP.HCM',
-          dob: '1990-01-01',
-          gender: 'Male',
-        }
-      ],
-      tasks: [
-        {
-          id: 1,
-          title: 'Attend Nischal’s Birthday Party',
-          description: 'Buy gifts on the way and pick up cake from the bakery. (6 PM | Fresh Elements) Buy gifts on the way and pick up cake from the bakery',
-          image: 'https://i2-vnexpress.vnecdn.net/2019/07/30/anh-thien-nhien-dep-thang-7-1564483719.jpg?w=1200&h=0&q=100&dpr=1&fit=crop&s=Nl3znv-VRtPyhJYhLwwRfA',
-          status: 'completed',
-          createdAt: '2021-01-01',
-          dueDate: '2021-01-01',
-        },
-
-        {
-          id: 2,
-          title: 'Landing Page Design for TravelDays',
-          description: 'Get the work done by EOD and discuss with client before leaving. (4 PM | Meeting Room)',
-          image: 'https://i2-vnexpress.vnecdn.net/2019/07/30/anh-thien-nhien-dep-thang-7-1564483719.jpg?w=1200&h=0&q=100&dpr=1&fit=crop&s=Nl3znv-VRtPyhJYhLwwRfA',
-          status: 'pending',
-          createdAt: '2021-01-01',
-          dueDate: '2021-01-01',
-        },
-
-        {
-          id: 3,
-          title: 'Presentation on Final Product',
-          description: 'Make sure everything is functioning and all the necessities are properly met. Prepare the team and get the documents ready for...',
-          image: 'https://i2-vnexpress.vnecdn.net/2019/07/30/anh-thien-nhien-dep-thang-7-1564483719.jpg?w=1200&h=0&q=100&dpr=1&fit=crop&s=Nl3znv-VRtPyhJYhLwwRfA',
-          status: 'in-progress',
-          createdAt: '2021-01-01',
-          dueDate: '2021-01-01',
-        },
-
-        {
-          id: 4,
-          title: 'Review Code Changes',
-          description: 'Review pull requests and provide feedback to development team',
-          image: 'https://i2-vnexpress.vnecdn.net/2019/07/30/anh-thien-nhien-dep-thang-7-1564483719.jpg?w=1200&h=0&q=100&dpr=1&fit=crop&s=Nl3znv-VRtPyhJYhLwwRfA',
-          status: 'pending',
-          createdAt: '2021-01-01',
-          dueDate: '2021-01-01',
-        },
-
-        {
-          id: 5,
-          title: 'Update Documentation',
-          description: 'Update API documentation and user guides',
-          image: 'https://i2-vnexpress.vnecdn.net/2019/07/30/anh-thien-nhien-dep-thang-7-1564483719.jpg?w=1200&h=0&q=100&dpr=1&fit=crop&s=Nl3znv-VRtPyhJYhLwwRfA',
-          status: 'pending',
-          createdAt: '2021-01-01',
-          dueDate: '2021-01-01',
-        },
-
-        {
-          id: 6,
-          title: 'Team Meeting',
-          description: 'Weekly team sync meeting to discuss progress and blockers',
-          image: 'https://i2-vnexpress.vnecdn.net/2019/07/30/anh-thien-nhien-dep-thang-7-1564483719.jpg?w=1200&h=0&q=100&dpr=1&fit=crop&s=Nl3znv-VRtPyhJYhLwwRfA',
-          status: 'pending',
-          createdAt: '2021-01-01',
-          dueDate: '2021-01-01',
-        }
-      ],
-      completedTasks: [
-        {
-          id: 1,
-          title: 'Attend Nischal’s Birthday Party',
-          description: 'Buy gifts on the way and pick up cake from the bakery. (6 PM | Fresh Elements) Buy gifts on the way and pick up cake from the bakery',
-          image: 'https://i2-vnexpress.vnecdn.net/2019/07/30/anh-thien-nhien-dep-thang-7-1564483719.jpg?w=1200&h=0&q=100&dpr=1&fit=crop&s=Nl3znv-VRtPyhJYhLwwRfA',
-          status: 'completed',
-          createdAt: '2021-01-01',
-          dueDate: '2021-01-01',
-        },
-        {
-          id: 2,
-          title: 'Attend Nischal’s Birthday Party',
-          description: 'Buy gifts on the way and pick up cake from the bakery. (6 PM | Fresh Elements) Buy gifts on the way and pick up cake from the bakery',
-          image: 'https://i2-vnexpress.vnecdn.net/2019/07/30/anh-thien-nhien-dep-thang-7-1564483719.jpg?w=1200&h=0&q=100&dpr=1&fit=crop&s=Nl3znv-VRtPyhJYhLwwRfA',
-          status: 'completed',
-          createdAt: '2021-01-01',
-          dueDate: '2021-01-01',
-        },
-        {
-          id: 3,
-          title: 'Attend Nischal’s Birthday Party',
-          description: 'Buy gifts on the way and pick up cake from the bakery. (6 PM | Fresh Elements) Buy gifts on the way and pick up cake from the bakery',
-          image: 'https://i2-vnexpress.vnecdn.net/2019/07/30/anh-thien-nhien-dep-thang-7-1564483719.jpg?w=1200&h=0&q=100&dpr=1&fit=crop&s=Nl3znv-VRtPyhJYhLwwRfA',
-          status: 'completed',
-          createdAt: '2021-01-01',
-          dueDate: '2021-01-01',
-        },
-      ]
+      todayDate: (() => {
+        const date = new Date();
+        const day = date.getDate();
+        const month = date.toLocaleString('en-US', { month: 'long' });
+        return `${day} ${month}`;
+      })(),
+      members: [],
+      tasks: [],
     }
   },
-  created() { },
+  created() {
+    taskService.getAll().then(res => {
+      this.tasks = res.data
+    })
+    getAllMembers().then(res => {
+      this.members = res.data
+    })
+  },
   computed: {
-    completedCount() { return this.tasks.filter(t => t.done).length },
-    activeCount() { return this.tasks.length - this.completedCount },
-    upcoming() { return this.tasks.filter(t => t.dueDate).sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate)) },
-    recent() { return this.tasks.slice().reverse().slice(0, 5) },
-    todoTasks() {
-      return this.tasks.filter(t => !t.done).slice(0, 3);
+    completedTasks: () => {
+      return taskService.getAll().then(res => {
+        return res.data.filter(t => t.status === 'completed')
+      })
     },
     welcomeLastName() {
       const auth = useAuthStore()

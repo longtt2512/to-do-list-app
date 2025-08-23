@@ -8,7 +8,7 @@
         <div>
           <h2 class="text-xl font-semibold text-[#FF6767]">My Tasks</h2>
           <div class="text-sm">
-            <span class="text-[#000] mr-2">20 June</span>
+            <span class="text-[#000] mr-2">{{ todayDate }}</span>
             <span class="text-gray-500">.Today</span>
           </div>
         </div>
@@ -16,7 +16,7 @@
 
       <!-- Task Cards -->
       <div class="space-y-4 flex-1 overflow-y-auto min-h-0 pr-4 py-2">
-        <TaskCard v-for="task in tasks" :key="task.id" :task="task" @view="view" @edit="edit" />
+        <TaskCard v-for="task in tasks" :key="task.id" :task="task" @click="view(task.id)" />
       </div>
     </div>
 
@@ -24,24 +24,23 @@
     <div
       class="h-full flex-1 flex flex-col w-[45%] border border-[#A1A3ABA1] rounded-xl overflow-hidden p-6 pr-2">
       <div class="flex gap-4 mb-3">
-        <img src="https://images.unsplash.com/photo-1515378791036-0648a3ef77b2?auto=format&fit=facearea&w=96&h=96"
-          alt="Task" class="w-20 h-20 rounded-lg object-cover border border-gray-200" />
+        <img :src="task.image || '/src/assets/avatar.png'" :alt="task.title" class="w-20 h-20 rounded-lg object-cover border border-gray-200" />
         <div class="flex flex-col justify-center">
-          <h3 class="font-semibold text-[16px] mb-1">Submit Documents</h3>
+          <h3 class="font-semibold text-[16px] mb-1">{{ task.title }}</h3>
           <div class="text-[13px] mb-1">
             <span class="font-medium">Priority:</span>
-            <span class="text-[#FF6767] font-semibold ml-1">Extreme</span>
+            <span class="text-[#FF6767] font-semibold ml-1">{{ task.priority }}</span>
           </div>
           <div class="text-[13px] mb-1">
             <span class="font-medium">Status:</span>
-            <span class="text-[#FF6767] font-semibold ml-1">Not Started</span>
+            <span class="text-[#FF6767] font-semibold ml-1">{{ task.status }}</span>
           </div>
-          <div class="text-[11px] text-gray-400">Created on: 20/06/2023</div>
+          <div class="text-[11px] text-gray-400">Created on: {{ task.createdAt }}</div>
         </div>
       </div>
       <div class="text-[13px] leading-relaxed text-[#222] flex-1">
         <div class="mb-2">
-          <span class="font-semibold">Task Title:</span> Document Submission.
+          <span class="font-semibold">Task Title:</span> {{ task.title }}
         </div>
         <div class="mb-2">
           <span class="font-semibold">Objective:</span>
@@ -93,141 +92,36 @@
 <script>
 import TaskCard from '../components/TaskCard.vue'
 import TaskCardCompleted from '../components/TaskCardCompleted.vue'
+import { taskService } from '../services/task-service'
+
 export default {
   components: { TaskCard, TaskCardCompleted },
   data() {
     return {
-      members: [
-        {
-          name: 'Nguyen Van A',
-          avatar: 'https://i2-vnexpress.vnecdn.net/2019/07/30/anh-thien-nhien-dep-thang-7-1564483719.jpg?w=1200&h=0&q=100&dpr=1&fit=crop&s=Nl3znv-VRtPyhJYhLwwRfA',
-          email: 'nguyenvan@example.com',
-          phone: '0123456789',
-          address: '123 Nguyen Van Linh, Q9, TP.HCM',
-          dob: '1990-01-01',
-          gender: 'Male',
-        },
-        {
-          name: 'Nguyen Van A',
-          avatar: 'https://i2-vnexpress.vnecdn.net/2019/07/30/anh-thien-nhien-dep-thang-7-1564483719.jpg?w=1200&h=0&q=100&dpr=1&fit=crop&s=Nl3znv-VRtPyhJYhLwwRfA',
-          email: 'nguyenvan@example.com',
-          phone: '0123456789',
-          address: '123 Nguyen Van Linh, Q9, TP.HCM',
-          dob: '1990-01-01',
-          gender: 'Male',
-        },
-        {
-          name: 'Nguyen Van A',
-          avatar: 'https://i2-vnexpress.vnecdn.net/2019/07/30/anh-thien-nhien-dep-thang-7-1564483719.jpg?w=1200&h=0&q=100&dpr=1&fit=crop&s=Nl3znv-VRtPyhJYhLwwRfA',
-          email: 'nguyenvan@example.com',
-          phone: '0123456789',
-          address: '123 Nguyen Van Linh, Q9, TP.HCM',
-          dob: '1990-01-01',
-          gender: 'Male',
-        },
-        {
-          name: 'Nguyen Van A',
-          avatar: 'https://i2-vnexpress.vnecdn.net/2019/07/30/anh-thien-nhien-dep-thang-7-1564483719.jpg?w=1200&h=0&q=100&dpr=1&fit=crop&s=Nl3znv-VRtPyhJYhLwwRfA',
-          email: 'nguyenvan@example.com',
-          phone: '0123456789',
-          address: '123 Nguyen Van Linh, Q9, TP.HCM',
-          dob: '1990-01-01',
-          gender: 'Male',
-        },
-        {
-          name: 'Nguyen Van A',
-          avatar: 'https://i2-vnexpress.vnecdn.net/2019/07/30/anh-thien-nhien-dep-thang-7-1564483719.jpg?w=1200&h=0&q=100&dpr=1&fit=crop&s=Nl3znv-VRtPyhJYhLwwRfA',
-          email: 'nguyenvan@example.com',
-          phone: '0123456789',
-          address: '123 Nguyen Van Linh, Q9, TP.HCM',
-          dob: '1990-01-01',
-          gender: 'Male',
-        },
-        {
-          name: 'Nguyen Van A',
-          avatar: 'https://i2-vnexpress.vnecdn.net/2019/07/30/anh-thien-nhien-dep-thang-7-1564483719.jpg?w=1200&h=0&q=100&dpr=1&fit=crop&s=Nl3znv-VRtPyhJYhLwwRfA',
-          email: 'nguyenvan@example.com',
-          phone: '0123456789',
-          address: '123 Nguyen Van Linh, Q9, TP.HCM',
-          dob: '1990-01-01',
-          gender: 'Male',
-        }
-      ],
-      tasks: [
-        {
-          id: 1,
-          title: 'Attend Nischal’s Birthday Party',
-          description: 'Buy gifts on the way and pick up cake from the bakery. (6 PM | Fresh Elements) Buy gifts on the way and pick up cake from the bakery',
-          image: 'https://i2-vnexpress.vnecdn.net/2019/07/30/anh-thien-nhien-dep-thang-7-1564483719.jpg?w=1200&h=0&q=100&dpr=1&fit=crop&s=Nl3znv-VRtPyhJYhLwwRfA',
-          status: 'completed',
-          createdAt: '2021-01-01',
-          dueDate: '2021-01-01',
-        },
-
-        {
-          id: 2,
-          title: 'Landing Page Design for TravelDays',
-          description: 'Get the work done by EOD and discuss with client before leaving. (4 PM | Meeting Room)',
-          image: 'https://i2-vnexpress.vnecdn.net/2019/07/30/anh-thien-nhien-dep-thang-7-1564483719.jpg?w=1200&h=0&q=100&dpr=1&fit=crop&s=Nl3znv-VRtPyhJYhLwwRfA',
-          status: 'pending',
-          createdAt: '2021-01-01',
-          dueDate: '2021-01-01',
-        },
-
-        {
-          id: 3,
-          title: 'Presentation on Final Product',
-          description: 'Make sure everything is functioning and all the necessities are properly met. Prepare the team and get the documents ready for...',
-          image: 'https://i2-vnexpress.vnecdn.net/2019/07/30/anh-thien-nhien-dep-thang-7-1564483719.jpg?w=1200&h=0&q=100&dpr=1&fit=crop&s=Nl3znv-VRtPyhJYhLwwRfA',
-          status: 'in-progress',
-          createdAt: '2021-01-01',
-          dueDate: '2021-01-01',
-        },
-
-        {
-          id: 4,
-          title: 'Review Code Changes',
-          description: 'Review pull requests and provide feedback to development team',
-          image: 'https://i2-vnexpress.vnecdn.net/2019/07/30/anh-thien-nhien-dep-thang-7-1564483719.jpg?w=1200&h=0&q=100&dpr=1&fit=crop&s=Nl3znv-VRtPyhJYhLwwRfA',
-          status: 'pending',
-          createdAt: '2021-01-01',
-          dueDate: '2021-01-01',
-        },
-
-        {
-          id: 5,
-          title: 'Update Documentation',
-          description: 'Update API documentation and user guides',
-          image: 'https://i2-vnexpress.vnecdn.net/2019/07/30/anh-thien-nhien-dep-thang-7-1564483719.jpg?w=1200&h=0&q=100&dpr=1&fit=crop&s=Nl3znv-VRtPyhJYhLwwRfA',
-          status: 'pending',
-          createdAt: '2021-01-01',
-          dueDate: '2021-01-01',
-        },
-
-        {
-          id: 6,
-          title: 'Team Meeting',
-          description: 'Weekly team sync meeting to discuss progress and blockers',
-          image: 'https://i2-vnexpress.vnecdn.net/2019/07/30/anh-thien-nhien-dep-thang-7-1564483719.jpg?w=1200&h=0&q=100&dpr=1&fit=crop&s=Nl3znv-VRtPyhJYhLwwRfA',
-          status: 'pending',
-          createdAt: '2021-01-01',
-          dueDate: '2021-01-01',
-        }
-      ],
+      tasks: [],
+      task: null,
+      todayDate: (() => {
+        const date = new Date();
+        const day = date.getDate();
+        const month = date.toLocaleString('en-US', { month: 'long' });
+        return `${day} ${month}`;
+      })(),
     }
   },
-  created() { },
+  created() {
+    taskService.getAll().then(res => {
+      this.tasks = res.data
+      if(this.tasks.length > 0) {
+        this.task = this.tasks[0]
+      }
+    })
+   },
   computed: {
-    completedCount() { return this.tasks.filter(t => t.done).length },
-    activeCount() { return this.tasks.length - this.completedCount },
-    upcoming() { return this.tasks.filter(t => t.dueDate).sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate)) },
-    recent() { return this.tasks.slice().reverse().slice(0, 5) },
-    todoTasks() {
-      return this.tasks.filter(t => !t.done).slice(0, 3);
-    },
   },
   methods: {
-    view(id) { this.$router.push(`/tasks/${id}`) }, edit(id) { this.$router.push(`/tasks/${id}?edit=1`) }
+    view(id) {
+      this.task = this.tasks.find(t => t.id === id)
+    }
   }
 }
 </script>
