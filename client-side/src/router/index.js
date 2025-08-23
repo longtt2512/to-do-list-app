@@ -18,19 +18,20 @@ const routes = [
     path: '/',
     component: MainLayout,
     children: [
-      { path: '', component: Dashboard },
-      { path: '/tasks', component: MyTask },
-      { path: '/tasks/add', component: AddTask },
-      { path: '/tasks/:id', component: ViewTask, props: true },
-      { path: '/categories', component: Categories },
-      { path: '/categories/add', component: AddCategory, name: 'add-category' },
-      { path: '/categories/edit/:id', component: EditCategory, name: 'edit-category' },
-      { path: '/account', component: Account },
+      { path: '', component: Dashboard, meta: { authenticated: true } },
+      { path: '/tasks', component: MyTask, meta: { authenticated: true } },
+      { path: '/tasks/add', component: AddTask, meta: { authenticated: true } },
+      { path: '/tasks/:id', component: ViewTask, props: true, meta: { authenticated: true } },
+      { path: '/categories', component: Categories, meta: { authenticated: true } },
+      { path: '/categories/add', component: AddCategory, name: 'add-category', meta: { authenticated: true } },
+      { path: '/categories/edit/:id', component: EditCategory, name: 'edit-category', meta: { authenticated: true } },
+      { path: '/account', component: Account, meta: { authenticated: true } },
     ]
   },
   {
     path: '/login',
     component: AuthLayout,
+    meta: { authenticated: false },
     children: [
       { path: '', component: Login }
     ]
@@ -38,17 +39,20 @@ const routes = [
   {
     path: '/register',
     component: AuthLayout,
+    meta: { authenticated: false },
     children: [
       { path: '', component: Register }
     ]
   },
   {
     path: '/about',
-    component: AboutUs
+    component: AboutUs,
+    meta: { authenticated: false },
   },
   {
     path: '/:pathMatch(.*)*',
     component: MainLayout,
+    meta: { authenticated: false },
     children: [
       { path: '', redirect: '/' }
     ]
@@ -56,4 +60,14 @@ const routes = [
 ]
 
 const router = createRouter({ history: createWebHistory(), routes })
+
+router.beforeEach((to, _from, next) => {
+  const isAuthenticated = localStorage.getItem('accessToken')
+  if(to.meta.authenticated && !isAuthenticated) {
+    next('/login')
+  } else if(!to.meta.authenticated && isAuthenticated) {
+    next('/')
+  }
+  next()
+})
 export default router
