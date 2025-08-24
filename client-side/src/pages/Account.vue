@@ -6,7 +6,7 @@
         <!-- Go Back Button and Title on same line -->
         <div class="flex justify-between items-center mb-6">
           <div>
-            <h2 class="text-2xl font-semibold text-black">Account Information</h2>
+            <h2 class="text-2xl font-semibold text-black">{{ isChangePasswordForm ? 'Change Password' : 'Account Information' }}</h2>
             <div class="w-[200px] h-0.5 bg-[#FF6767] mt-2"></div>
           </div>
           <button class="text-[#FF6767] underline font-medium">Go Back</button>
@@ -25,7 +25,8 @@
             </div>
           </div>
           
-          <form @submit.prevent="save" class="space-y-6">
+          <!-- Update Info Form -->
+          <form v-if="!isChangePasswordForm" @submit.prevent="save" class="space-y-6">
             <!-- First Name - separate row -->
             <div>
               <Input 
@@ -79,7 +80,48 @@
               <Button @click="save" :disabled="isLoading" class="flex-1">
                 Update Info
               </Button>
-              <Button @click="changePassword" class="flex-1 bg-gray-500">
+              <Button @click="switchToChangePassword" class="flex-1 bg-gray-500">
+                Change Password
+              </Button>
+            </div>
+          </form>
+
+          <!-- Change Password Form -->
+          <form v-else @submit.prevent="updatePassword" class="space-y-6">
+            <Input 
+              v-model="passwordData.currentPassword" 
+              type="password" 
+              placeholder="Current Password" 
+              :icon="editNameIcon" 
+            />
+            
+            <Input 
+              v-model="passwordData.newPassword" 
+              type="password" 
+              placeholder="New Password" 
+              :icon="editNameIcon" 
+            />
+            
+            <Input 
+              v-model="passwordData.confirmPassword" 
+              type="password" 
+              placeholder="Confirm New Password" 
+              :icon="editNameIcon" 
+            />
+
+            <div v-if="errorMessage" class="text-red-600 text-sm bg-red-50 p-3 rounded-lg border border-red-200">
+              {{ errorMessage }}
+            </div>
+
+            <div v-if="successMessage" class="text-green-600 text-sm bg-green-50 p-3 rounded-lg border border-green-200">
+              {{ successMessage }}
+            </div>
+            
+            <div class="flex gap-4 pt-4">
+              <Button @click="switchToUpdateInfo" class="flex-1 bg-gray-500">
+                Update Info
+              </Button>
+              <Button @click="updatePassword" :disabled="isLoading" class="flex-1">
                 Change Password
               </Button>
             </div>
@@ -94,6 +136,7 @@ import Button from '@/components/Button.vue'
 import Input from '@/components/Input.vue'
 import { useAuthStore } from '@/stores/auth'
 import { computed } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
 
 export default {
   components: {
@@ -109,6 +152,11 @@ export default {
         contactNumber: '',
         position: ''
       },
+      passwordData: {
+        currentPassword: '',
+        newPassword: '',
+        confirmPassword: ''
+      },
       errorMessage: '',
       successMessage: '',
       isLoading: false,
@@ -119,6 +167,9 @@ export default {
     }
   },
   computed: {
+    isChangePasswordForm() {
+      return this.$route.path === '/account/change-password'
+    },
     displayName() {
       const auth = useAuthStore()
       const p = auth.profile
@@ -224,12 +275,76 @@ export default {
       }
     },
     
-    changePassword() {
-      // Logic will be updated later as mentioned in the requirements
-      this.successMessage = 'Change password functionality will be implemented later'
-      setTimeout(() => {
-        this.successMessage = ''
-      }, 3000)
+    switchToChangePassword() {
+      this.$router.push('/account/change-password')
+    },
+    
+    switchToUpdateInfo() {
+      this.$router.push('/account')
+    },
+    
+    validatePasswordForm() {
+      if (!this.passwordData.currentPassword) {
+        return 'Current password is required'
+      }
+      
+      if (!this.passwordData.newPassword) {
+        return 'New password is required'
+      }
+      
+      if (this.passwordData.newPassword.length < 6) {
+        return 'New password must be at least 6 characters long'
+      }
+      
+      if (this.passwordData.newPassword !== this.passwordData.confirmPassword) {
+        return 'New passwords do not match'
+      }
+      
+      if (this.passwordData.currentPassword === this.passwordData.newPassword) {
+        return 'New password must be different from current password'
+      }
+      
+      return null
+    },
+    
+    async updatePassword() {
+      this.errorMessage = ''
+      this.successMessage = ''
+      
+      const validationError = this.validatePasswordForm()
+      if (validationError) {
+        this.errorMessage = validationError
+        return
+      }
+      
+      this.isLoading = true
+      
+      try {
+        // Here you would typically make an API call to update the password
+        // For now, we'll simulate a successful password update
+        
+        await new Promise(resolve => setTimeout(resolve, 1000)) // Simulate API call
+        
+        this.successMessage = 'Password updated successfully!'
+        
+        // Reset password form
+        this.passwordData = {
+          currentPassword: '',
+          newPassword: '',
+          confirmPassword: ''
+        }
+        
+        // Clear success message after 3 seconds
+        setTimeout(() => {
+          this.successMessage = ''
+        }, 3000)
+        
+      } catch (error) {
+        this.errorMessage = 'Failed to update password. Please try again.'
+        console.error('Password update error:', error)
+      } finally {
+        this.isLoading = false
+      }
     }
   }
 }

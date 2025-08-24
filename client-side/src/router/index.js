@@ -26,6 +26,7 @@ const routes = [
       { path: '/categories/add', component: AddCategory, name: 'add-category', meta: { authenticated: true } },
       { path: '/categories/edit/:id', component: EditCategory, name: 'edit-category', meta: { authenticated: true } },
       { path: '/account', component: Account, meta: { authenticated: true } },
+      { path: '/account/change-password', component: Account, meta: { authenticated: true } },
     ]
   },
   {
