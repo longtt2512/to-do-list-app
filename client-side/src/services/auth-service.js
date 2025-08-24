@@ -14,7 +14,7 @@ export const authService = {
 
       const data = await res.json().catch(() => ({}))
 
-      if (res.ok && res.status === 200) {
+      if (res.ok && (res.status === 200 || res.status === 204)) {
         const { accessToken, refreshToken } = data || {}
         if (accessToken && refreshToken) {
           this.saveTokens(accessToken, refreshToken)
@@ -63,7 +63,7 @@ export const authService = {
 
       const data = await res.json().catch(() => ({}))
 
-      if (res.ok || res.status === 201) {
+      if (res.ok || res.status === 201 || res.status === 204) {
         return {
           success: true,
           status: res.status,
@@ -80,6 +80,49 @@ export const authService = {
       return {
         success: false,
         error: err.message || 'Registration failed'
+      }
+    }
+  },
+
+  async changePassword(passwordData) {
+    try {
+      const baseUrl = import.meta.env.VITE_API_URL || 'http://nhom4.choi.one:8081'
+      const locale = (localStorage.getItem('locale') || localStorage.getItem('lang') || navigator.language || 'en')
+      const accessToken = this.getAccessToken()
+      
+      const res = await fetch(`${baseUrl}/auth/change-password`, {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json', 
+          'Accept-Language': locale,
+          ...(accessToken ? { 'Authorization': `Bearer ${accessToken}` } : {})
+        },
+        body: JSON.stringify({
+          currentPassword: passwordData.currentPassword,
+          newPassword: passwordData.newPassword,
+          confirmNewPassword: passwordData.confirmNewPassword
+        })
+      })
+
+      const data = await res.json().catch(() => ({}))
+
+      if (res.ok && (res.status === 200 || res.status === 204)) {
+        return {
+          success: true,
+          status: res.status,
+          data
+        }
+      }
+
+      return {
+        success: false,
+        status: res.status,
+        error: data?.message || 'Password change failed'
+      }
+    } catch (err) {
+      return {
+        success: false,
+        error: err.message || 'Password change failed'
       }
     }
   },

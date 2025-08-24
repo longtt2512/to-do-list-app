@@ -9,7 +9,7 @@
             <h2 class="text-2xl font-semibold text-black">{{ isChangePasswordForm ? 'Change Password' : 'Account Information' }}</h2>
             <div class="w-[200px] h-0.5 bg-[#FF6767] mt-2"></div>
           </div>
-          <button class="text-[#FF6767] underline font-medium">Go Back</button>
+          <button @click="goBack" class="text-[#FF6767] underline font-medium">Go Back</button>
         </div>
           
           <!-- User Profile Section -->
@@ -135,14 +135,17 @@
 import Button from '@/components/Button.vue'
 import Input from '@/components/Input.vue'
 import { useAuthStore } from '@/stores/auth'
-import { computed } from 'vue'
+import { computed, inject } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
+import { updateMyProfile } from '@/services/profile-service'
+import authService from '@/services/auth-service'
 
 export default {
   components: {
     Button,
     Input
   },
+  inject: ['goBack'],
   data() {
     return { 
       user: {
@@ -240,7 +243,25 @@ export default {
       this.isLoading = true
       
       try {
-        // Save to localStorage
+        // Prepare data for API call
+        const profileData = {
+          firstName: this.user.firstname,
+          lastName: this.user.lastname,
+          email: this.user.email,
+          contactNumber: this.user.contactNumber,
+          position: this.user.position
+        }
+        
+        // Call the API to update profile
+        const updatedProfile = await updateMyProfile(profileData)
+        
+        // Update auth store with the new profile data
+        const auth = useAuthStore()
+        if (auth.updateProfile) {
+          await auth.updateProfile(updatedProfile)
+        }
+        
+        // Also save to localStorage for backward compatibility
         const userToSave = {
           firstname: this.user.firstname,
           lastName: this.user.lastname,
@@ -251,14 +272,7 @@ export default {
           phone: this.user.contactNumber,
           position: this.user.position
         }
-        
         localStorage.setItem('user', JSON.stringify(userToSave))
-        
-        // Update auth store if available
-        const auth = useAuthStore()
-        if (auth.updateProfile) {
-          await auth.updateProfile(userToSave)
-        }
         
         this.successMessage = 'Profile updated successfully!'
         
@@ -320,24 +334,30 @@ export default {
       this.isLoading = true
       
       try {
-        // Here you would typically make an API call to update the password
-        // For now, we'll simulate a successful password update
+        // Call the API to change password
+        const result = await authService.changePassword({
+          currentPassword: this.passwordData.currentPassword,
+          newPassword: this.passwordData.newPassword,
+          confirmNewPassword: this.passwordData.confirmPassword
+        })
         
-        await new Promise(resolve => setTimeout(resolve, 1000)) // Simulate API call
-        
-        this.successMessage = 'Password updated successfully!'
-        
-        // Reset password form
-        this.passwordData = {
-          currentPassword: '',
-          newPassword: '',
-          confirmPassword: ''
+        if (result.success) {
+          this.successMessage = 'Password updated successfully!'
+          
+          // Reset password form
+          this.passwordData = {
+            currentPassword: '',
+            newPassword: '',
+            confirmPassword: ''
+          }
+          
+          // Clear success message after 3 seconds
+          setTimeout(() => {
+            this.successMessage = ''
+          }, 3000)
+        } else {
+          this.errorMessage = result.error || 'Failed to update password. Please try again.'
         }
-        
-        // Clear success message after 3 seconds
-        setTimeout(() => {
-          this.successMessage = ''
-        }, 3000)
         
       } catch (error) {
         this.errorMessage = 'Failed to update password. Please try again.'
