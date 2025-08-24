@@ -1,7 +1,7 @@
 <template>
   <div class="background">
     <div class="login-container">
-      <div class="login-form">
+      <div class="login-form" @keydown.enter="login">
         <h2 class="title">Sign In</h2>
         <Input
           v-model="username" 
