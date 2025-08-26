@@ -17,7 +17,7 @@
             <div class="p-6">
                 <!-- Add Category Button -->
                 <router-link :to="{ name: 'add-category' }"
-                             class="bg-button-primary text-white px-4 py-2 rounded text-sm font-medium transition-colors mb-6">
+                             class="bg-button-primary text-white px-4 py-3 rounded text-sm font-medium transition-colors mb-6">
                     Add Category
                 </router-link>
 
@@ -116,7 +116,7 @@
                                 </tr>
                                 <tr v-if="!category.items || category.items.length === 0">
                                     <td colspan="3" class="px-4 py-6 text-center text-sm text-gray-500">
-                                        No {{ category.categoryName.toLowerCase() }} items yet. Click "Add New {{
+                                        No {{ category.categoryName.toLowerCase() }} items yet. Click "+ Edit {{
                                             category.categoryName
                                         }}" to get started.
                                     </td>
@@ -174,18 +174,27 @@
                     </div>
                 </div>
             </div>
+<!--            <button @click="showModal = true">+ Add Task</button>-->
+<!--            <TaskModal v-model="showModal" @taskAdded="reloadTasks" />-->
         </div>
     </div>
+
 </template>
 
 <script setup>
 import {ref, onMounted, nextTick, inject} from 'vue'
 import {categoryService} from '@/services/category-service'
+import TaskModal from '@/components/TaskModal.vue'
 
 const goBack = inject('goBack')
 
 const categories = ref([])
 const emit = defineEmits(['categoriesUpdated'])
+const showModal = ref(false)
+
+const reloadTasks = (newTask) => {
+    console.log('Task created:', newTask)
+}
 
 // Inline editing states
 const editingInlineItem = ref({

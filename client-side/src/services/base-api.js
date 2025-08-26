@@ -61,8 +61,20 @@ export const get = async (url) => {
   return apiClient.get(url)
 }
 
-export const post = async (url, data) => {
-  return apiClient.post(url, data)
+export const post = async (url, data = {}, config = {}) => {
+  // If data is FormData, create a special config without Content-Type
+  if (data instanceof FormData) {
+    return apiClient.post(url, data, {
+      ...config,
+      headers: {
+        ...config.headers,
+        // Don't set Content-Type for FormData - let browser handle it
+      },
+      transformRequest: [(data) => data] // Prevent axios from transforming FormData
+    })
+  }
+  
+  return apiClient.post(url, data, config)
 }
 
 export const put = async (url, data) => {

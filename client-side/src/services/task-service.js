@@ -51,6 +51,7 @@ export const taskService = {
             }
         }
     },
+
     async updateTask(id, data) {
         try {
             const res = await put(`${API_URL}/${id}`, data)
@@ -67,6 +68,7 @@ export const taskService = {
             }
         }
     },
+
     async deleteTask(id) {
         try {
             const res = await del(`${API_URL}/${id}`)
@@ -80,6 +82,26 @@ export const taskService = {
                 success: false,
                 data: null,
                 error: error.message || 'Failed to delete task'
+            }
+        }
+    },
+
+    async uploadTaskImage(taskId, file) {
+        const formData = new FormData();
+        formData.append('file', file);
+        try {
+            const res = await post(`${API_URL}/${taskId}/image`, formData);
+            return {
+                success: true,
+                data: res,
+                error: null
+            }
+        } catch (error) {
+            console.error('Upload image error:', error);
+            return {
+                success: false,
+                data: null,
+                error: error.message || 'Failed to upload task image'
             }
         }
     }
