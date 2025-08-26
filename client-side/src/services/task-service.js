@@ -1,4 +1,4 @@
-import { get, post, put } from './base-api.js'
+import { get, post, put, del } from './base-api.js'
 
 const API_URL = '/api/tasks'
 
@@ -24,7 +24,7 @@ export const taskService = {
             const res = await get(`${API_URL}/${id}`)
             return {
                 success: true,
-                data: res?.values || [],
+                data: res || [],
                 error: null
             }
         } catch (error) {

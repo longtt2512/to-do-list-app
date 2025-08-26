@@ -174,8 +174,17 @@
                     </div>
                 </div>
             </div>
-<!--            <button @click="showModal = true">+ Add Task</button>-->
-<!--            <TaskModal v-model="showModal" @taskAdded="reloadTasks" />-->
+            
+            <!-- Task Buttons -->
+            <div class="p-6 border-t border-gray-200">
+                <div class="flex space-x-4">
+                    <AddTaskButton />
+                    <EditTaskButton 
+                        task-id="98bbc0af-bbef-42fd-b8d3-0fe3723690eb"
+                    />
+                </div>
+            </div>
+            
         </div>
     </div>
 
@@ -184,17 +193,13 @@
 <script setup>
 import {ref, onMounted, nextTick, inject} from 'vue'
 import {categoryService} from '@/services/category-service'
-import TaskModal from '@/components/TaskModal.vue'
+import AddTaskButton from '@/components/AddTaskButton.vue'
+import EditTaskButton from '@/components/EditTaskButton.vue'
 
 const goBack = inject('goBack')
 
 const categories = ref([])
 const emit = defineEmits(['categoriesUpdated'])
-const showModal = ref(false)
-
-const reloadTasks = (newTask) => {
-    console.log('Task created:', newTask)
-}
 
 // Inline editing states
 const editingInlineItem = ref({
