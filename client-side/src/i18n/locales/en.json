@@ -39,5 +39,20 @@
       "copyright": "© 2024 Project To-Do Team. Built with passion and dedication.",
       "returnLink": "← Return to Application"
     }
+  },
+  "invite": {
+    "title": "Invite Members",
+    "loading": "Loading members list...",
+    "tryAgain": "Try Again",
+    "totalMembers": "Total {count} members",
+    "searchPlaceholder": "Search members...",
+    "studentCode": "Student Code",
+    "class": "Class",
+    "invite": "Invite",
+    "invited": "Invited",
+    "uninvite": "Uninvite",
+    "noMembers": "No members found",
+    "close": "Close",
+    "sendInvites": "Send {count} invites"
   }
 }
