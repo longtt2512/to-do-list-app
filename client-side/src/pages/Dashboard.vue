@@ -53,17 +53,18 @@
             </div>
           </div>
           <button
-            class="hover:bg-[#b4b4b475] hover:text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors">
+            class="hover:bg-[#b4b4b475] hover:text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors"
+            @click="handleAddTask">
             <svg class="w-3 h-3" fill="none" stroke="#F24E1E" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
             </svg>
-            <span class="text-[12px] text-[#A1A3AB]" @click="handleAddTask">Add task</span>
+            <span class="text-[12px] text-[#A1A3AB]">Add task</span>
           </button>
         </div>
 
         <!-- Task Cards -->
         <div class="space-y-4 flex-1 overflow-y-auto min-h-0 pr-4 py-2">
-          <TaskCard v-for="task in tasks" :key="task.id" :task="task" @view="view" @edit="edit" />
+          <TaskCard v-for="task in tasks" :key="task.id" :task="task" @view="view" @edit="editTask" @delete="deleteTask" />
         </div>
       </div>
 
@@ -125,7 +126,7 @@
         </div>
       </div>
     </div>
-    <TaskModal v-model="showModalAddTask" :task="null" :id="null" @taskAdded="handleTaskAdded" />
+    <TaskModal v-model="showModalAddTask" :task="null" :id="taskSelected" @taskAdded="handleTaskAdded" @taskUpdated="handleTaskUpdated" />
     <InviteModal
       v-model="showModalInvite"
       @invite-sent="handleInviteSent"
@@ -157,6 +158,8 @@ export default {
       tasks: [],
       showModalAddTask: false,
       showModalInvite: false,
+      showModalDeleteTask: false,
+      taskSelected: null,
     }
   },
   created() {
@@ -188,6 +191,7 @@ export default {
     view(id) { this.$router.push(`/tasks/${id}`) }, edit(id) { this.$router.push(`/tasks/${id}?edit=1`) },
     handleAddTask() {
       this.showModalAddTask = true
+      this.taskSelected = null
     },
     handleTaskAdded() {
       this.fetchTasks()
@@ -199,6 +203,22 @@ export default {
     handleInviteSent() {
       this.fetchMembers()
       this.showModalInvite = false
+    },
+    deleteTask(task) {
+      this.showModalDeleteTask = true
+      this.taskSelected = task.id
+    },
+    handleTaskDeleted() {
+      this.fetchTasks()
+      this.showModalDeleteTask = false
+    },
+    editTask(task) {
+      this.showModalAddTask = true
+      this.taskSelected = task.id
+    },
+    handleTaskUpdated() {
+      this.fetchTasks()
+      this.showModalAddTask = false
     },
   }
 }
