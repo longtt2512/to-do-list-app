@@ -39,5 +39,20 @@
       "copyright": "© 2024 Nhóm Dự Án To-Do. Được xây dựng với đam mê và tận tâm.",
       "returnLink": "← Quay Về Ứng Dụng"
     }
+  },
+  "invite": {
+    "title": "Mời Thành Viên",
+    "loading": "Đang tải danh sách thành viên...",
+    "tryAgain": "Thử Lại",
+    "totalMembers": "Tổng cộng {count} thành viên",
+    "searchPlaceholder": "Tìm kiếm thành viên...",
+    "studentCode": "Mã SV",
+    "class": "Lớp",
+    "invite": "Mời",
+    "invited": "Đã mời",
+    "uninvite": "Bỏ mời",
+    "noMembers": "Không có thành viên nào",
+    "close": "Đóng",
+    "sendInvites": "Gửi {count} lời mời"
   }
 }

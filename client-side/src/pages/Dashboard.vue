@@ -15,11 +15,9 @@
           </div>
           <div v-if="members.length > 3"
             class="relative w-10 h-10 rounded-md overflow-hidden flex items-center justify-center text-sm font-medium text-gray-600">
-            <img
-              :src="member?.avatarUrl"
-              alt="plus" class="w-full h-full object-cover" :class="{ 'blur-[1px]': members.length > 4 }">
-            <span
-              v-if="members.length > 4"
+            <img :src="member?.avatarUrl" alt="plus" class="w-full h-full object-cover"
+              :class="{ 'blur-[1px]': members.length > 4 }">
+            <span v-if="members.length > 4"
               class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full text-sm font-medium text-white">
               +{{ members.length - 4 }}
             </span>
@@ -28,7 +26,8 @@
 
         <!-- Invite Button -->
         <button
-          class="bg-white border border-[#FF6767] text-[#FF6767] px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors">
+          class="bg-white border border-[#FF6767] text-[#FF6767] px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors"
+          @click="handleInvite">
           <img src="../assets/icons/invite-user.svg" alt="invite-user" class="w-4 h-4">
           <span>Invite</span>
         </button>
@@ -58,7 +57,7 @@
             <svg class="w-3 h-3" fill="none" stroke="#F24E1E" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
             </svg>
-            <span class="text-[12px] text-[#A1A3AB]">Add task</span>
+            <span class="text-[12px] text-[#A1A3AB]" @click="handleAddTask">Add task</span>
           </button>
         </div>
 
@@ -126,6 +125,12 @@
         </div>
       </div>
     </div>
+    <TaskModal v-model="showModalAddTask" :task="null" :id="null" @taskAdded="handleTaskAdded" />
+    <InviteModal
+      v-model="showModalInvite"
+      @invite-sent="handleInviteSent"
+    />
+
   </div>
 </template>
 
@@ -136,8 +141,10 @@ import ProgressIndicator from '../components/ProgressIndicator.vue'
 import { useAuthStore } from '@/stores/auth'
 import { taskService } from '../services/task-service'
 import { getAllMembers } from '../services/member-service'
+import TaskModal from '../components/TaskModal.vue'
+import InviteModal from '../components/InviteModal.vue'
 export default {
-  components: { TaskCard, TaskCardCompleted, ProgressIndicator },
+  components: { TaskCard, TaskCardCompleted, ProgressIndicator, TaskModal, InviteModal },
   data() {
     return {
       todayDate: (() => {
@@ -148,21 +155,17 @@ export default {
       })(),
       members: [],
       tasks: [],
+      showModalAddTask: false,
+      showModalInvite: false,
     }
   },
   created() {
-    taskService.getAll().then(res => {
-      this.tasks = res.data
-    })
-    getAllMembers().then(res => {
-      this.members = res.data
-    })
+    this.fetchTasks()
+    this.fetchMembers()
   },
   computed: {
-    completedTasks: () => {
-      return taskService.getAll().then(res => {
-        return res.data.filter(t => t.status === 'completed')
-      })
+    completedTasks() {
+      return this.tasks.filter(t => t.status === 'completed')
     },
     welcomeLastName() {
       const auth = useAuthStore()
@@ -172,7 +175,31 @@ export default {
     },
   },
   methods: {
-    view(id) { this.$router.push(`/tasks/${id}`) }, edit(id) { this.$router.push(`/tasks/${id}?edit=1`) }
+    fetchMembers() {
+      getAllMembers().then(res => {
+        this.members = res.data
+      })
+    },
+    fetchTasks() {
+      taskService.getAll().then(res => {
+        this.tasks = res.data
+      })
+    },
+    view(id) { this.$router.push(`/tasks/${id}`) }, edit(id) { this.$router.push(`/tasks/${id}?edit=1`) },
+    handleAddTask() {
+      this.showModalAddTask = true
+    },
+    handleTaskAdded() {
+      this.fetchTasks()
+      this.showModalAddTask = false
+    },
+    handleInvite() {
+      this.showModalInvite = true
+    },
+    handleInviteSent() {
+      this.fetchMembers()
+      this.showModalInvite = false
+    },
   }
 }
 </script>
