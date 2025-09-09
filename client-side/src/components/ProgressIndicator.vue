@@ -1,7 +1,7 @@
 <template>
   <div class="text-center">
-    <div class="relative w-16 h-16 mx-auto mb-2">
-      <svg class="w-16 h-16" viewBox="0 0 36 36">
+    <div class="relative w-20 h-20 mx-auto mb-2">
+      <svg class="w-20 h-20" viewBox="0 0 36 36">
         <path class="text-gray-200" stroke="currentColor" stroke-width="2" fill="none"
           d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
         <path :class="progressColor" stroke="currentColor" stroke-width="2" fill="none"

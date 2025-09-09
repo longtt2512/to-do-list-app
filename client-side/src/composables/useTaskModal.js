@@ -107,6 +107,8 @@ export function useTaskModal() {
             const response = await taskService.getTaskById(taskId)
             if (response.success) {
                 populateFormWithTask(response.data)
+                globalState.selectedTask = response.data
+                globalState.selectedTaskId = taskId
             } else {
                 globalState.errorMessage = response.error || 'Failed to load task data'
             }
@@ -157,6 +159,11 @@ export function useTaskModal() {
 
     const triggerFileInput = () => fileInput.value?.click()
 
+    const setSelectedTask = (task) => {
+        globalState.selectedTask = task
+        globalState.selectedTaskId = task.id
+    }
+
     return {
         // State
         state: globalState,
@@ -177,7 +184,7 @@ export function useTaskModal() {
         handleFileSelect,
         handleFileDrop,
         removeImage,
-        triggerFileInput
+        triggerFileInput,
     }
 }
 

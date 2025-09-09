@@ -1,12 +1,12 @@
 <template>
   <div
-    class="bg-white relative border border-[#A1A3AB] rounded-xl px-[40px] py-[15px] hover:shadow-md transition-shadow">
+    class="bg-white relative border border-[#A1A3AB] rounded-xl px-[40px] py-[15px] hover:shadow-md transition-shadow cursor-pointer"
+    @click="handleClick" >
     <!-- Status Indicator -->
-    <div class="w-4 h-4 rounded-full border-2 mt-2 absolute top-2 left-3" :class="getStatusClasses(task.status)">
-    </div>
+    <div class="w-4 h-4 rounded-full border-2 mt-2 absolute top-2 left-3" :class="getStatusBorderClasses(statusTask)" />
 
     <!-- Three-dot menu button -->
-    <div class="absolute top-1 right-3 w-6 h-6">
+    <div class="absolute top-1 right-3 w-6 h-6" @click.stop>
       <button 
         @click="toggleDropdown"
         class="w-6 h-6 flex items-center justify-center hover:bg-gray-100 rounded-full transition-colors"
@@ -46,7 +46,12 @@
       <!-- Task Details -->
       <div class="flex-1">
         <h3 class="font-bold text-[16px]">{{ task.title }}</h3>
-        <p class="text-[14px] text-[#747474] leading-relaxed">{{ task.description || 'No description available' }}</p>
+        <p
+          class="text-[14px] text-[#747474] leading-relaxed line-clamp-3"
+          style="-webkit-line-clamp: 3; display: -webkit-box; -webkit-box-orient: vertical; overflow: hidden;"
+        >
+          {{ task.description || 'No description available' }}
+        </p>
       </div>
       <img :src="task.image || '/src/assets/avatar.png'" :alt="task.title" class="w-[88px] h-[88px] rounded-xl overflow-hidden object-cover mt-5">
     </div>
@@ -55,13 +60,13 @@
     <div class="flex items-center justify-between space-y-2 text-[10px]">
       <div class="flex items-center justify-between gap-1">
         <span>Priority:</span>
-        <span class="text-[#42ADE2]">{{ getPriorityText(task.priority) }}</span>
+        <span :class="getPriorityClasses(priorityTask)">{{ getPriorityText(priorityTask) }}</span>
       </div>
 
       <div class="flex items-center justify-between gap-1">
         <span>Status:</span>
-        <span :class="getStatusTextClasses(task.status)">
-          {{ getStatusText(task.status) }}
+        <span :class="getStatusClasses(statusTask)">
+          {{ getStatusText(statusTask) }}
         </span>
       </div>
 
@@ -70,18 +75,71 @@
         <span>{{ formatDate(task.createdAt) }}</span>
       </div>
     </div>
+    <div v-if="isLoadingDelete" class="absolute top-0 left-0 w-full h-full bg-white bg-opacity-50 flex items-center justify-center">
+      <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-500"></div>
+    </div>
+    <TaskModal 
+      v-if="showModalAddTask"
+      v-model="showModalAddTask" 
+      :task="task" 
+      :id="taskSelected" 
+      @taskAdded="handleTaskAdded" 
+      @taskUpdated="handleTaskUpdated" 
+    />
+    
+    <Confirm
+      v-if="showConfirm"
+      v-model="showConfirm"
+      title="Xóa Task"
+      :message="`Bạn có chắc chắn muốn xóa task '${task.title}'?`"
+      ok-text="Xóa"
+      cancel-text="Hủy"
+      @ok="confirmDelete"
+      @cancel="cancelDelete"
+    />
   </div>
 </template>
 
 <script>
+import { useTaskStore } from '@/stores/task'
+import { useRouter } from 'vue-router'
+import TaskModal from './TaskModal.vue'
+import Confirm from './Comfirm.vue'
+
 export default {
   name: 'TaskCard',
+  components: { TaskModal, Confirm },
   props: ['task'],
-  emits: ['edit', 'delete'],
-  data() {
+  emits: ['click', 'deleteSuccess'],
+  setup() {
+    const taskStore = useTaskStore()
+    const router = useRouter()
+    
     return {
-      showDropdown: false,
-    };
+      taskStore,
+      router
+    }
+  },
+  data() {
+      return {
+        showDropdown: false,
+        showModalAddTask: false,
+        taskSelected: null,
+        showConfirm: false,
+      };
+  },
+  computed: {
+    isLoadingDelete() {
+      return this.taskStore.isLoadingDelete;
+    },
+    statusTask() {
+      const selectionsStatus = this.task.selections.find(selection => selection.categoryName === 'status');
+      return selectionsStatus ? selectionsStatus.value : '';
+    },
+    priorityTask() {
+      const selectionsPriority = this.task.selections.find(selection => selection.categoryName === 'priority');
+      return selectionsPriority ? selectionsPriority.value : '';
+    }
   },
   mounted() {
     // Close dropdown when clicking outside
@@ -102,30 +160,83 @@ export default {
       }
     },
     
-    handleEdit() {
+    async handleEdit() {
       this.showDropdown = false;
-      this.$emit('edit', this.task);
+      // Mở modal edit với task hiện tại
+      this.taskSelected = this.task.id;
+      this.showModalAddTask = true;
     },
 
     handleDelete() {
       this.showDropdown = false;
-      this.$emit('delete', this.task);
+      this.showConfirm = true;
     },
-    getStatusClasses(status) {
+
+    async confirmDelete() {
+      console.log('confirmDelete');
+      
+      try {
+        if (this.isLoadingDelete) {
+          return;
+        }
+        const success = await this.taskStore.deleteTask(this.task.id);
+        if (success) {
+          // Task đã được xóa khỏi store, UI sẽ tự động cập nhật
+          console.log('Task deleted successfully');
+          this.$emit('deleteSuccess');
+        } else {
+          alert('Có lỗi xảy ra khi xóa task');
+        }
+      } catch (error) {
+        console.error('Error deleting task:', error);
+        alert('Có lỗi xảy ra khi xóa task');
+      }
+    },
+
+    cancelDelete() {
+      this.showConfirm = false;
+    },
+
+    async handleClick() {
+      this.$emit('click', this.task);
+      // Navigate to view page
+      // this.router.push(`/tasks/${this.task.id}`);
+    },
+
+    // Xử lý khi task được thêm mới (không cần thiết trong TaskCard nhưng giữ để tương thích)
+    async handleTaskAdded() {
+      this.showModalAddTask = false;
+      this.taskSelected = null;
+      // Store đã được cập nhật tự động, không cần làm gì thêm
+    },
+
+    // Xử lý khi task được cập nhật
+    async handleTaskUpdated(dataEdited) {
+      this.showModalAddTask = false;
+      this.taskSelected = null;
+
+      // Cập nhật task trong store
+      this.taskStore.updateTask(dataEdited.id, dataEdited);
+
+      // Store đã được cập nhật tự động, không cần làm gì thêm
+    },
+    getStatusBorderClasses(status) {
       const classes = {
-        'completed': 'border-green-300',
+        'not-started': 'border-gray-300',
         'in-progress': 'border-blue-300',
-        'not-started': 'border-red-300',
+        'completed': 'border-green-300',
+        'overdue': 'border-red-300',
         'pending': 'border-yellow-300'
       };
       return classes[status] || 'border-gray-300';
     },
 
-    getStatusTextClasses(status) {
+    getStatusClasses(status) {
       const classes = {
         'completed': 'text-green-600',
         'in-progress': 'text-blue-600',
-        'not-started': 'text-red-600',
+        'not-started': 'text-gray-600',
+        'overdue': 'text-red-600',
         'pending': 'text-yellow-600'
       };
       return classes[status] || 'text-gray-600';
@@ -136,18 +247,28 @@ export default {
         'completed': 'Completed',
         'in-progress': 'In Progress',
         'not-started': 'Not Started',
-        'pending': 'Pending'
+        'overdue': 'Overdue',
+        'pending': 'Pending',
       };
       return statusMap[status] || 'Unknown';
     },
 
     getPriorityText(priority) {
       const priorityMap = {
-        'high': 'High',
-        'medium': 'Moderate',
-        'low': 'Low'
+        'HIGH': 'High',
+        'MEDIUM': 'Medium',
+        'LOW': 'Low'
       };
       return priorityMap[priority] || 'Medium';
+    },
+
+    getPriorityClasses(priority) {
+      const priorityMap = {
+        'HIGH': 'text-red-600',
+        'MEDIUM': 'text-yellow-600',
+        'LOW': 'text-green-600'
+      };
+      return priorityMap[priority] || 'text-gray-600';
     },
 
     formatDate(dateString) {

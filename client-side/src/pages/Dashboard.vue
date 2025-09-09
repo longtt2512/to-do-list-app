@@ -7,8 +7,7 @@
         <img src="../assets/icons/hand-wave.svg" alt="hand-wave" class="w-10 h-10">
       </div>
 
-      <div class="flex items-center space-x-4">
-        <!-- User Avatars -->
+      <!-- <div class="flex items-center space-x-4">
         <div class="flex space-x-1">
           <div v-for="(member, index) in members.slice(0, 3)" :key="index" class="w-10 h-10 rounded-md overflow-hidden">
             <img :src="member?.avatarUrl" :alt="member?.name" class="w-full h-full object-cover">
@@ -24,14 +23,13 @@
           </div>
         </div>
 
-        <!-- Invite Button -->
         <button
           class="bg-white border border-[#FF6767] text-[#FF6767] px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors"
           @click="handleInvite">
           <img src="../assets/icons/invite-user.svg" alt="invite-user" class="w-4 h-4">
           <span>Invite</span>
         </button>
-      </div>
+      </div> -->
     </div>
 
     <!-- Main Content -->
@@ -64,7 +62,32 @@
 
         <!-- Task Cards -->
         <div class="space-y-4 flex-1 overflow-y-auto min-h-0 pr-4 py-2">
-          <TaskCard v-for="task in tasks" :key="task.id" :task="task" @view="view" @edit="editTask" @delete="deleteTask" />
+          <!-- Loading State -->
+          <div v-if="isLoading" class="flex justify-center items-center h-32">
+            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-[#FF6767]"></div>
+          </div>
+          
+          <!-- Error State -->
+          <div v-else-if="hasError" class="flex flex-col items-center justify-center h-32 text-red-500">
+            <p class="text-sm">{{ errorMessage }}</p>
+            <button @click="fetchTasks" class="mt-2 px-4 py-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition-colors">
+              Thử lại
+            </button>
+          </div>
+          
+          <!-- Tasks List -->
+          <template v-else-if="tasks.length > 0">
+            <TaskCard 
+              v-for="task in tasks" 
+              :key="task.id" 
+              :task="task" 
+            />
+          </template>
+          
+          <!-- Empty State -->
+          <div v-else class="flex flex-col items-center justify-center h-32 text-gray-500">
+            <p class="text-sm">Chưa có task nào</p>
+          </div>
         </div>
       </div>
 
@@ -85,9 +108,9 @@
 
           <!-- Progress Indicators -->
           <div class="grid grid-cols-3 gap-4 mb-6">
-            <ProgressIndicator :percent="84" status="completed" />
-            <ProgressIndicator :percent="46" status="in-progress" />
-            <ProgressIndicator :percent="13" status="not-started" />
+            <ProgressIndicator :percent="percentCompletedTasks" status="completed" />
+            <ProgressIndicator :percent="percentInProgressTasks" status="in-progress" />
+            <ProgressIndicator :percent="percentNotStartedTasks" status="not-started" />
           </div>
 
           <!-- Legend -->
@@ -126,10 +149,13 @@
         </div>
       </div>
     </div>
-    <TaskModal v-model="showModalAddTask" :task="null" :id="taskSelected" @taskAdded="handleTaskAdded" @taskUpdated="handleTaskUpdated" />
     <InviteModal
       v-model="showModalInvite"
       @invite-sent="handleInviteSent"
+    />
+    <TaskModal
+      v-model="showModalAddTask"
+      @taskAdded="addTaskSuccess"
     />
 
   </div>
@@ -140,12 +166,21 @@ import TaskCard from '../components/TaskCard.vue'
 import TaskCardCompleted from '../components/TaskCardCompleted.vue'
 import ProgressIndicator from '../components/ProgressIndicator.vue'
 import { useAuthStore } from '@/stores/auth'
-import { taskService } from '../services/task-service'
+import { useTaskStore } from '@/stores/task'
 import { getAllMembers } from '../services/member-service'
-import TaskModal from '../components/TaskModal.vue'
 import InviteModal from '../components/InviteModal.vue'
+import TaskModal from '../components/TaskModal.vue'
 export default {
-  components: { TaskCard, TaskCardCompleted, ProgressIndicator, TaskModal, InviteModal },
+  components: { TaskCard, TaskCardCompleted, ProgressIndicator, InviteModal, TaskModal },
+  setup() {
+    const taskStore = useTaskStore()
+    const authStore = useAuthStore()
+    
+    return {
+      taskStore,
+      authStore
+    }
+  },
   data() {
     return {
       todayDate: (() => {
@@ -155,26 +190,56 @@ export default {
         return `${day} ${month}`;
       })(),
       members: [],
-      tasks: [],
-      showModalAddTask: false,
       showModalInvite: false,
-      showModalDeleteTask: false,
-      taskSelected: null,
+      showModalAddTask: false,
     }
   },
   created() {
-    this.fetchTasks()
+    // this.fetchTasks()
     this.fetchMembers()
   },
   computed: {
+    // Sử dụng store getters
+    tasks() {
+      return this.taskStore.allTasks
+    },
     completedTasks() {
-      return this.tasks.filter(t => t.status === 'completed')
+      return this.taskStore.completedTasks
+    },
+    notStartedTasks() {
+      return this.taskStore.notStartedTasks
+    },
+    inProgressTasks() {
+      return this.taskStore.inProgressTasks
+    },
+    isLoading() {
+      return this.taskStore.isLoading
+    },
+    hasError() {
+      return this.taskStore.hasError
+    },
+    errorMessage() {
+      return this.taskStore.errorMessage
     },
     welcomeLastName() {
-      const auth = useAuthStore()
-      const last = (auth.profile?.lastName || '').trim()
+      const last = (this.authStore.profile?.lastName || '').trim()
       // Fallbacks if profile is not yet loaded
-      return last || auth.user?.username || auth.user?.name || 'User'
+      return last || this.authStore.user?.username || this.authStore.user?.name || 'User'
+    },
+    percentCompletedTasks() {
+      return this.tasks.length > 0 
+        ? Math.round((this.completedTasks.length / this.tasks.length * 100) * 100) / 100 
+        : 0
+    },
+    percentInProgressTasks() {
+      return this.tasks.length > 0 
+        ? Math.round((this.inProgressTasks.length / this.tasks.length * 100) * 100) / 100 
+        : 0
+    },
+    percentNotStartedTasks() {
+      return this.tasks.length > 0 
+        ? Math.round((this.notStartedTasks.length / this.tasks.length * 100) * 100) / 100 
+        : 0
     },
   },
   methods: {
@@ -183,43 +248,26 @@ export default {
         this.members = res.data
       })
     },
-    fetchTasks() {
-      taskService.getAll().then(res => {
-        this.tasks = res.data
-      })
+    async fetchTasks() {
+      await this.taskStore.fetchTasks()
     },
-    view(id) { this.$router.push(`/tasks/${id}`) }, edit(id) { this.$router.push(`/tasks/${id}?edit=1`) },
     handleAddTask() {
       this.showModalAddTask = true
-      this.taskSelected = null
     },
-    handleTaskAdded() {
-      this.fetchTasks()
+    addTaskSuccess(data) {
+      this.taskStore.addTask(data)
       this.showModalAddTask = false
     },
-    handleInvite() {
-      this.showModalInvite = true
-    },
-    handleInviteSent() {
-      this.fetchMembers()
-      this.showModalInvite = false
-    },
-    deleteTask(task) {
-      this.showModalDeleteTask = true
-      this.taskSelected = task.id
-    },
-    handleTaskDeleted() {
-      this.fetchTasks()
-      this.showModalDeleteTask = false
-    },
-    editTask(task) {
-      this.showModalAddTask = true
-      this.taskSelected = task.id
-    },
-    handleTaskUpdated() {
-      this.fetchTasks()
-      this.showModalAddTask = false
-    },
+    // Task actions are now handled in TaskCard component
+    // handleInvite() {
+    //   this.showModalInvite = true
+    // },
+    // handleInviteSent() {
+    //   this.fetchMembers()
+    //   this.showModalInvite = false
+    // },
+    // Task actions are now handled directly in TaskCard component via store
+    // No need for event handlers since store is reactive
   }
 }
 </script>

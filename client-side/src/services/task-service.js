@@ -5,7 +5,7 @@ const API_URL = '/api/tasks'
 export const taskService = {
     async getAll() {
         try {
-            const res = await get(API_URL)
+            const res = await get(`${API_URL}?page=0&size=99999&sort=createdAt,desc`)
             return {
                 success: true,
                 data: res?.content || [],
