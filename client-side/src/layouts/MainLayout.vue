@@ -9,7 +9,7 @@
         </div>
       </div>
     </main>
-  <Footer theme="light"/>
+    <Footer theme="light"/>
   </div>
 </template>
 
@@ -17,10 +17,14 @@
 import Sidebar from '../components/Sidebar.vue'
 import Header from '../components/Header.vue'
 import Footer from '../components/Footer.vue'
-import {useRouter} from 'vue-router'
-import {provide} from 'vue'
+import { useRouter } from 'vue-router'
+import { provide, onMounted } from 'vue'
+import { useAuthStore } from '@/stores/auth'
+import { useTaskStore } from '@/stores/task'
 
 const router = useRouter()
+const authStore = useAuthStore()
+const taskStore = useTaskStore()
 
 const goBack = () => {
   if (window.history.length > 1) {
@@ -30,8 +34,13 @@ const goBack = () => {
   }
 }
 provide('goBack', goBack)
-</script>
 
+onMounted(() => {
+  if (authStore.isAuthenticated) {
+    taskStore.fetchTasks()
+  }
+})
+</script>
 
 <style scoped>
 .menu-container {
