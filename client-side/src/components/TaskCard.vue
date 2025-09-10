@@ -75,7 +75,7 @@
         <span>{{ formatDate(task.createdAt) }}</span>
       </div>
     </div>
-    <div v-if="isLoadingDelete" class="absolute top-0 left-0 w-full h-full bg-white bg-opacity-50 flex items-center justify-center">
+    <div v-if="loadingDelete" class="absolute top-0 left-0 w-full h-full bg-white bg-opacity-50 flex items-center justify-center">
       <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-500"></div>
     </div>
     <TaskModal 
@@ -126,12 +126,10 @@ export default {
         showModalAddTask: false,
         taskSelected: null,
         showConfirm: false,
+        loadingDelete: false,
       };
   },
   computed: {
-    isLoadingDelete() {
-      return this.taskStore.isLoadingDelete;
-    },
     statusTask() {
       const selectionsStatus = this.task.selections.find(selection => selection.categoryName === 'status');
       return selectionsStatus ? selectionsStatus.value : '';
@@ -173,21 +171,23 @@ export default {
     },
 
     async confirmDelete() {
-      console.log('confirmDelete');
-      
+      this.loadingDelete = true;
       try {
-        if (this.isLoadingDelete) {
+        if (this.loadingDelete) {
           return;
         }
         const success = await this.taskStore.deleteTask(this.task.id);
         if (success) {
           // Task đã được xóa khỏi store, UI sẽ tự động cập nhật
           console.log('Task deleted successfully');
+          this.loadingDelete = false;
           this.$emit('deleteSuccess');
         } else {
           alert('Có lỗi xảy ra khi xóa task');
+          this.loadingDelete = false;
         }
       } catch (error) {
+        this.loadingDelete = false;
         console.error('Error deleting task:', error);
         alert('Có lỗi xảy ra khi xóa task');
       }
@@ -198,7 +198,12 @@ export default {
     },
 
     async handleClick() {
-      this.$emit('click', this.task);
+      this.router.push({
+        name: 'tasks',
+        query: {
+          task_id: this.task.id
+        }
+      });
       // Navigate to view page
       // this.router.push(`/tasks/${this.task.id}`);
     },

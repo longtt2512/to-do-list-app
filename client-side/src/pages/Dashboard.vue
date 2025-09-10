@@ -1,5 +1,5 @@
 <template>
-  <div class="h-[calc(100dvh-220px)] flex flex-col px-16 overflow-hidden">
+  <div class="h-[calc(100dvh-200px)] flex flex-col px-16 overflow-hidden">
     <!-- Header Section -->
     <div class="flex justify-between items-center mb-5">
       <div class="flex items-center">
