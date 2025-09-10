@@ -292,7 +292,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "localhost:8081/api/task-categories/95123f9d-dcf7-4c60-8046-43d471a85710?page=0&size=10&sort=categoryName,asc",
+					"raw": "localhost:8081/api/task-categories?page=0&size=10&sort=categoryName,asc",
 					"host": [
 						"localhost"
 					],

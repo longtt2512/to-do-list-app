@@ -1,6 +1,8 @@
 package com.ptit.taskservice.repository;
 
 import com.ptit.taskservice.entity.TaskCategory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -15,4 +17,7 @@ public interface TaskCategoryRepository extends JpaRepository<TaskCategory, UUID
 
   @EntityGraph(attributePaths = "values")
   Optional<TaskCategory> findWithValuesById(UUID id);
+
+  @EntityGraph(attributePaths = "values")
+  Page<TaskCategory> findAllBy(Pageable pageable);
 }
