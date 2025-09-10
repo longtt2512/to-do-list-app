@@ -60,7 +60,7 @@ public class TaskServiceImpl implements TaskService {
   @Override
   @Transactional(readOnly = true)
   public Page<TaskResponse> list(Pageable pageable) {
-    return tasks.findAll(pageable).map(this::toDtoShallow);
+    return tasks.findAllBy(pageable).map(this::toDtoShallow);
   }
 
   @Override
@@ -158,7 +158,28 @@ public class TaskServiceImpl implements TaskService {
   }
 
   private TaskResponse toDtoShallow(Task t) {
-    return new TaskResponse(t.getId(), t.getTitle(), t.getStartDate(), t.getDescription(), t.getImageKey(),
-        List.of(), t.getCreatedAt(), t.getUpdatedAt(), t.getCreatedBy(), t.getUpdatedBy());
+    var sels = t.getSelections().stream()
+        .sorted(Comparator.comparing(s -> s.getCategory().getCategoryName()))
+        .map(s -> new TaskCategorySelectionDto(
+            s.getCategory().getId(),
+            s.getCategory().getCategoryName(),
+            s.getValue().getId(),
+            s.getValue().getValue(),
+            s.getValue().getSortOrder()
+        ))
+        .toList();
+
+    return new TaskResponse(
+        t.getId(),
+        t.getTitle(),
+        t.getStartDate(),
+        t.getDescription(),
+        t.getImageKey(),
+        sels,
+        t.getCreatedAt(),
+        t.getUpdatedAt(),
+        t.getCreatedBy(),
+        t.getUpdatedBy()
+    );
   }
 }

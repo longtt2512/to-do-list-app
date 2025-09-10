@@ -62,7 +62,7 @@ public class TaskCategoryServiceImpl implements TaskCategoryService {
   @Override
   @Transactional(readOnly = true)
   public Page<TaskCategoryResponse> list(Pageable pageable) {
-    return categories.findAll(pageable).map(this::toDtoShallow);
+    return categories.findAllBy(pageable).map(this::toDto);
   }
 
   @Override
@@ -125,7 +125,6 @@ public class TaskCategoryServiceImpl implements TaskCategoryService {
     return new TaskCategoryResponse(c.getId(), c.getCategoryName(), vals, c.getCreatedAt(), c.getUpdatedAt());
   }
 
-  // for list paging to avoid N+1; return without values (or add a lightweight top-N if you want)
   private TaskCategoryResponse toDtoShallow(TaskCategory c) {
     return new TaskCategoryResponse(c.getId(), c.getCategoryName(), List.of(), c.getCreatedAt(), c.getUpdatedAt());
   }
