@@ -63,7 +63,7 @@ export const useTaskStore = defineStore('task', {
           this.tasks = result.data || []
           
           // Gọi chi tiết từng task để cập nhật thông tin đầy đủ
-          await this.fetchTasksDetails()
+          // await this.fetchTasksDetails()
           
           this.lastFetch = new Date()
         } else {

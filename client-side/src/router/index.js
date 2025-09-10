@@ -3,7 +3,6 @@ import MainLayout from '../layouts/MainLayout.vue'
 import AuthLayout from '../layouts/AuthLayout.vue'
 import Dashboard from '../pages/Dashboard.vue'
 import MyTask from '../pages/MyTask.vue'
-import ViewTask from '../pages/ViewTask.vue'
 import Categories from '../pages/Categories.vue'
 import Account from '../pages/Account.vue'
 import AboutUs from '../pages/AboutUs.vue'
@@ -18,8 +17,7 @@ const routes = [
     component: MainLayout,
     children: [
       { path: '', component: Dashboard, meta: { authenticated: true } },
-      { path: '/tasks', component: MyTask, meta: { authenticated: true } },
-      { path: '/tasks/:id', component: ViewTask, props: true, meta: { authenticated: true } },
+      { path: '/tasks', name: 'tasks', component: MyTask, meta: { authenticated: true } },
       { path: '/categories', component: Categories, meta: { authenticated: true } },
       { path: '/categories/add', component: AddCategory, name: 'add-category', meta: { authenticated: true } },
       { path: '/categories/edit/:id', component: EditCategory, name: 'edit-category', meta: { authenticated: true } },

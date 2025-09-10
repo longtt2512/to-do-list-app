@@ -1,5 +1,5 @@
 <template>
-  <div class="h-[calc(100dvh-220px)] flex gap-6 px-16 overflow-hidden">
+  <div class="h-[calc(100dvh-200px)] flex gap-6 px-16 overflow-hidden">
     <div class="h-full flex-1 flex flex-col w-[55%] border border-[#A1A3ABA1] rounded-xl overflow-hidden p-6 pr-2">
       <div class="flex items-center space-x-3 mb-3">
         <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
@@ -31,7 +31,8 @@
         
         <!-- Tasks List -->
         <template v-else-if="tasks.length > 0">
-          <TaskCard v-for="task in tasks" :key="task.id" :task="task" @click="handleClickTask(task)" @deleteSuccess="handleDeleteSuccess" />
+          <TaskCard v-for="task in tasks" :key="task.id" :task="task" @click="handleClickTask" @deleteSuccess="handleDeleteSuccess" :id="`task-card-${task.id}`"
+          :class="task.id === selectedTask?.id ? 'outline outline-2 -outline-offset-2 outline-[#FF6767]' : ''" />
         </template>
         
         <!-- Empty State -->
@@ -45,10 +46,10 @@
     <div
       class="h-full flex-1 flex flex-col w-[45%] border border-[#A1A3ABA1] rounded-xl overflow-hidden p-6 pr-2">
       <!-- Task Detail -->
-      <div v-if="task" class="flex gap-4 mb-3">
-        <img :src="task.image || '/src/assets/avatar.png'" :alt="task.title" class="w-20 h-20 rounded-lg object-cover border border-gray-200" />
+      <div v-if="selectedTask" class="flex gap-4 mb-3">
+        <img :src="selectedTask.image || '/src/assets/avatar.png'" :alt="selectedTask.title" class="w-20 h-20 rounded-lg object-cover border border-gray-200" />
         <div class="flex flex-col justify-center">
-          <h3 class="font-semibold text-[16px] mb-1">{{ task.title }}</h3>
+          <h3 class="font-semibold text-[16px] mb-1">{{ selectedTask.title }}</h3>
           <div class="text-[13px] mb-1">
             <span class="font-medium">Priority:</span>
             <span class="text-[#FF6767] font-semibold ml-1">{{ getPriorityText(priorityTask) }}</span>
@@ -57,7 +58,7 @@
             <span class="font-medium">Status:</span>
             <span class="text-[#FF6767] font-semibold ml-1">{{ getStatusText(statusTask) }}</span>
           </div>
-          <div class="text-[11px] text-gray-400">Created on: {{ formatDate(task.createdAt) }}</div>
+          <div class="text-[11px] text-gray-400">Created on: {{ formatDate(selectedTask.createdAt) }}</div>
         </div>
       </div>
       
@@ -65,13 +66,13 @@
       <div v-else class="flex flex-col items-center justify-center h-32 text-gray-500">
         <p class="text-sm">Chọn một task để xem chi tiết</p>
       </div>
-      <div v-if="task" class="text-[13px] leading-relaxed text-[#222] flex-1">
+      <div v-if="selectedTask" class="text-[13px] leading-relaxed text-[#222] flex-1">
         <div class="mb-2">
-          <span class="font-semibold">Task Title:</span> {{ task.title }}
+          <span class="font-semibold">Task Title:</span> {{ selectedTask.title }}
         </div>
         <div class="mb-2">
           <span class="font-semibold">Description:</span>
-          {{ task.description || 'No description available' }}
+          {{ selectedTask.description || 'No description available' }}
         </div>
         <div class="mb-2">
           <span class="font-semibold">Priority:</span>
@@ -83,17 +84,17 @@
         </div>
         <div class="mb-2">
           <span class="font-semibold">Created At:</span>
-          {{ formatDate(task.createdAt) }}
+          {{ formatDate(selectedTask.createdAt) }}
         </div>
-        <div v-if="task.updatedAt" class="mb-2">
+        <div v-if="selectedTask.updatedAt" class="mb-2">
           <span class="font-semibold">Updated At:</span>
-          {{ formatDate(task.updatedAt) }}
+          {{ formatDate(selectedTask.updatedAt) }}
         </div>
       </div>
-      <!-- <div v-if="task" class="flex justify-end gap-2 mt-4">
+      <div v-if="selectedTask" class="flex justify-end gap-2 mt-4">
         <button
           class="w-9 h-9 flex items-center justify-center bg-[#FF6767] rounded-lg hover:bg-[#e05555] transition-colors"
-          @click="editTask(task)">
+          @click="showModalAddTask = true">
           <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24"
             stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -102,15 +103,32 @@
         </button>
         <button
           class="w-9 h-9 flex items-center justify-center bg-red-600 rounded-lg hover:bg-red-700 transition-colors"
-          @click="deleteTask(task)">
+          @click="showConfirm = true">
           <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24"
             stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
               d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
           </svg>
         </button>
-      </div> -->
+      </div>
     </div>
+    <TaskModal 
+      v-if="showModalAddTask"
+      v-model="showModalAddTask" 
+      :task="selectedTask" 
+      :id="selectedTask.id" 
+      @taskUpdated="handleTaskUpdated" 
+    />
+    <Confirm
+      v-if="showConfirm"
+      v-model="showConfirm"
+      title="Xóa Task"
+      :message="`Bạn có chắc chắn muốn xóa task '${selectedTask.title}'?`"
+      ok-text="Xóa"
+      cancel-text="Hủy"
+      @ok="confirmDelete"
+      @cancel="cancelDelete"
+    />
   </div>
 </template>
 
@@ -118,9 +136,10 @@
 import TaskCard from '../components/TaskCard.vue'
 import TaskCardCompleted from '../components/TaskCardCompleted.vue'
 import { useTaskStore } from '@/stores/task'
-
+import TaskModal from '../components/TaskModal.vue'
+import Confirm from '../components/Comfirm.vue'
 export default {
-  components: { TaskCard, TaskCardCompleted },
+  components: { TaskCard, TaskCardCompleted, TaskModal, Confirm },
   setup() {
     const taskStore = useTaskStore()
     
@@ -130,6 +149,8 @@ export default {
   },
   data() {
     return {
+      showModalAddTask: false,
+      showConfirm: false,
       selectedTask: null,
       todayDate: (() => {
         const date = new Date();
@@ -139,16 +160,39 @@ export default {
       })(),
     }
   },
-  created() {
-    this.fetchTasks()
+  watch: {
+    tasks: {
+      handler(newVal) {
+        if(newVal.length > 0) {
+          const task = newVal.find(task => task.id === this.selectedTask?.id)
+          if (task) {
+            this.selectedTask = task
+          }else {
+            this.selectedTask = newVal[0]
+          }
+        }else {
+          this.selectedTask = null
+        }
+      },
+      deep: true,
+      },
+    '$route.query'(newVal) {
+      if(newVal.task_id) {
+        this.selectedTask = this.tasks.find(task => task.id === newVal.task_id)
+        this.$nextTick(() => {
+        // Tìm phần tử task card theo id
+        const taskElement = document.getElementById(`task-card-${this.selectedTask?.id}`);
+        if (taskElement) {
+          taskElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      });
+      }
+    },
   },
   computed: {
     // Sử dụng store getters
     tasks() {
       return this.taskStore.allTasks
-    },
-    task() {
-      return this.selectedTask || (this.tasks.length > 0 ? this.tasks[0] : null)
     },
     isLoading() {
       return this.taskStore.isLoading
@@ -168,46 +212,55 @@ export default {
       return selectionsPriority ? selectionsPriority.value : '';
     }
   },
+  mounted() {
+    this.handleSelectTaskQuery()
+  },
   methods: {
-    async fetchTasks() {
+    async handleSelectTaskQuery() {
       if (this.tasks.length > 0 && !this.selectedTask) {
-        this.selectedTask = this.tasks[0]
+        const task = this.tasks.find(task => task.id === this.$route.query.task_id)
+        this.selectedTask =  task ? task : this.tasks[0]
+
+      // Tự động scroll đến task được chọn
+      this.$nextTick(() => {
+        // Tìm phần tử task card theo id
+        const taskElement = document.getElementById(`task-card-${this.selectedTask?.id}`);
+        if (taskElement) {
+          taskElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      });
       }
     },
     handleClickTask(dataTask) {
       this.selectedTask = dataTask
     },
-    editTask(task) {
-      console.log();
-      
-      // Navigate to edit page
-      this.$router.push(`/tasks/${task.id}?edit=1`)
+    async handleTaskUpdated(dataEdited) {
+      this.showModalAddTask = false;
+      this.selectedTask = null;
+      // Cập nhật task trong store
+      this.taskStore.updateTask(dataEdited.id, dataEdited);
+
+      // Store đã được cập nhật tự động, không cần làm gì thêm
     },
-    async deleteTask(task) {
-      if (confirm(`Bạn có chắc chắn muốn xóa task '${task.title}'?`)) {
-        try {
-          const success = await this.taskStore.deleteTask(task.id)
-          if (success) {
-            // Clear selected task if it was deleted
-            if (this.selectedTask && this.selectedTask.id === task.id) {
-              this.selectedTask = this.tasks.length > 0 ? this.tasks[0] : null
-            }
-            console.log('Task deleted successfully')
-          } else {
-            alert('Có lỗi xảy ra khi xóa task')
-          }
-        } catch (error) {
-          console.error('Error deleting task:', error)
-          alert('Có lỗi xảy ra khi xóa task')
+    
+    async confirmDelete() {
+      try {
+        const success = await this.taskStore.deleteTask(this.selectedTask.id);
+        if (success) {
+          // Task đã được xóa khỏi store, UI sẽ tự động cập nhật
+        } else {
+          alert('Có lỗi xảy ra khi xóa task');
         }
+      } catch (error) {
+        console.error('Error deleting task:', error);
+        alert('Có lỗi xảy ra khi xóa task');
       }
     },
-    handleDeleteSuccess() {
-      this.selectedTask = null
-      setTimeout(() => {
-        this.fetchTasks()
-      }, 1000)
+
+    cancelDelete() {
+      this.showConfirm = false;
     },
+
     formatDate(dateString) {
       if (!dateString) return 'N/A';
       const date = new Date(dateString);

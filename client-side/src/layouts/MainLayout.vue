@@ -1,15 +1,15 @@
 <template>
   <div class="h-screen flex flex-col">
-    <Header/>
+    <Header />
     <main class="flex-1 flex">
-      <Sidebar class="hidden md:block relative z-20"/>
+      <Sidebar class="hidden md:block relative z-20" />
       <div class="flex-1 flex flex-col">
         <div class="flex-1 menu-container">
-          <router-view/>
+          <router-view />
         </div>
       </div>
     </main>
-    <Footer theme="light"/>
+    <!-- <Footer theme="light"/> -->
   </div>
 </template>
 
@@ -21,6 +21,7 @@ import { useRouter } from 'vue-router'
 import { provide, onMounted } from 'vue'
 import { useAuthStore } from '@/stores/auth'
 import { useTaskStore } from '@/stores/task'
+import { categoryService } from '@/services/category-service'
 
 const router = useRouter()
 const authStore = useAuthStore()
@@ -35,9 +36,52 @@ const goBack = () => {
 }
 provide('goBack', goBack)
 
-onMounted(() => {
+onMounted(async () => {
   if (authStore.isAuthenticated) {
     taskStore.fetchTasks()
+  }
+  const response = await categoryService.getAll()
+  if (response.success) {
+    const categoryStatus = response.data.some(category => category.categoryName === 'status')
+    const categoryPriority = response.data.some(category => category.categoryName === 'priority')
+    if (!categoryStatus) {
+      await categoryService.create({
+        "categoryName": "status",
+        "values": [
+          {
+            "value": "Completed",
+            "sortOrder": 0
+          },
+          {
+            "value": "In Progress",
+            "sortOrder": 1
+          },
+          {
+            "value": "Not Started",
+            "sortOrder": 2
+          }
+        ]
+      })
+    }
+    if (!categoryPriority) {
+      await categoryService.create({
+        "categoryName": "priority",
+        "values": [
+          {
+            "value": "LOW",
+            "sortOrder": 0
+          },
+          {
+            "value": "MEDIUM",
+            "sortOrder": 1
+          },
+          {
+            "value": "HIGH",
+            "sortOrder": 2
+          }
+        ]
+      })
+    }
   }
 })
 </script>
