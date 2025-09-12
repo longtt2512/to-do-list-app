@@ -24,7 +24,7 @@ export const useTaskStore = defineStore('task', {
     completedTasks: (state) => state.tasks.filter(task => {
       const selectionsStatus = task.selections.find(selection => selection.categoryName === 'status');
       return selectionsStatus ? selectionsStatus.value === 'completed' : false
-    }),
+    }).sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt)),
     inProgressTasks: (state) => state.tasks.filter(task => {
       const selectionsStatus = task.selections.find(selection => selection.categoryName === 'status');
       return selectionsStatus ? selectionsStatus.value === 'in-progress' : false

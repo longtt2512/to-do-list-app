@@ -65,12 +65,12 @@
     <div class="flex items-center justify-between space-y-2 text-[10px]">
       <div class="flex items-center justify-between gap-1">
         <span>Priority:</span>
-        <span :class="getPriorityClasses(priorityTask)">{{ getPriorityText(priorityTask) }}</span>
+        <span class="font-medium" :class="getPriorityClasses(priorityTask)">{{ getPriorityText(priorityTask) }}</span>
       </div>
 
       <div class="flex items-center justify-between gap-1">
         <span>Status:</span>
-        <span :class="getStatusClasses(statusTask)">
+        <span class="font-medium" :class="getStatusClasses(statusTask)">
           {{ getStatusText(statusTask) }}
         </span>
       </div>
@@ -177,11 +177,11 @@ export default {
     },
 
     async confirmDelete() {
+      if (this.loadingDelete) {
+        return;
+      }
       this.loadingDelete = true;
       try {
-        if (this.loadingDelete) {
-          return;
-        }
         const success = await this.taskStore.deleteTask(this.task.id);
         if (success) {
           // Task đã được xóa khỏi store, UI sẽ tự động cập nhật
