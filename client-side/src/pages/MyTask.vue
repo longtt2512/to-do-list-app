@@ -47,7 +47,7 @@
       class="h-full flex-1 flex flex-col w-[45%] border border-[#A1A3ABA1] rounded-xl overflow-hidden p-6 pr-2">
       <!-- Task Detail -->
       <div v-if="selectedTask" class="flex gap-4 mb-3">
-        <img :src="selectedTask.image || '/src/assets/avatar.png'" :alt="selectedTask.title" class="w-20 h-20 rounded-lg object-cover border border-gray-200" />
+        <img :src="currentImageSrc" :alt="selectedTask.title" @error="handleImageError" class="w-20 h-20 rounded-lg object-cover border border-gray-200" />
         <div class="flex flex-col justify-center">
           <h3 class="font-semibold text-[16px] mb-1">{{ selectedTask.title }}</h3>
           <div class="text-[13px] mb-1">
@@ -66,7 +66,7 @@
       <div v-else class="flex flex-col items-center justify-center h-32 text-gray-500">
         <p class="text-sm">Chọn một task để xem chi tiết</p>
       </div>
-      <div v-if="selectedTask" class="text-[13px] leading-relaxed text-[#222] flex-1">
+      <div v-if="selectedTask" class="text-[13px] leading-relaxed text-[#222] flex-1 overflow-y-auto">
         <div class="mb-2">
           <span class="font-semibold">Task Title:</span> {{ selectedTask.title }}
         </div>
@@ -152,6 +152,7 @@ export default {
       showModalAddTask: false,
       showConfirm: false,
       selectedTask: null,
+      currentImageSrc: null,
       todayDate: (() => {
         const date = new Date();
         const day = date.getDate();
@@ -167,11 +168,14 @@ export default {
           const task = newVal.find(task => task.id === this.selectedTask?.id)
           if (task) {
             this.selectedTask = task
+            this.currentImageSrc = task.imageKey || '/src/assets/avatar.png'
           }else {
             this.selectedTask = newVal[0]
+            this.currentImageSrc = newVal[0].imageKey || '/src/assets/avatar.png'
           }
         }else {
           this.selectedTask = null
+          this.currentImageSrc = '/src/assets/avatar.png'
         }
       },
       deep: true,
@@ -179,6 +183,7 @@ export default {
     '$route.query'(newVal) {
       if(newVal.task_id) {
         this.selectedTask = this.tasks.find(task => task.id === newVal.task_id)
+        this.currentImageSrc = this.selectedTask.imageKey || '/src/assets/avatar.png'
         this.$nextTick(() => {
         // Tìm phần tử task card theo id
         const taskElement = document.getElementById(`task-card-${this.selectedTask?.id}`);
@@ -220,7 +225,7 @@ export default {
       if (this.tasks.length > 0 && !this.selectedTask) {
         const task = this.tasks.find(task => task.id === this.$route.query.task_id)
         this.selectedTask =  task ? task : this.tasks[0]
-
+        this.currentImageSrc = this.selectedTask.imageKey || '/src/assets/avatar.png'
       // Tự động scroll đến task được chọn
       this.$nextTick(() => {
         // Tìm phần tử task card theo id
@@ -233,14 +238,12 @@ export default {
     },
     handleClickTask(dataTask) {
       this.selectedTask = dataTask
+      this.currentImageSrc = dataTask.imageKey || '/src/assets/avatar.png'
     },
-    async handleTaskUpdated(dataEdited) {
+    async handleTaskUpdated() {
       this.showModalAddTask = false;
       this.selectedTask = null;
-      // Cập nhật task trong store
-      this.taskStore.updateTask(dataEdited.id, dataEdited);
-
-      // Store đã được cập nhật tự động, không cần làm gì thêm
+      this.currentImageSrc = '/src/assets/avatar.png'
     },
     
     async confirmDelete() {
@@ -287,6 +290,9 @@ export default {
       };
       return priorityMap[priority] || 'Medium';
     },
+    handleImageError() {
+      this.currentImageSrc = '/src/assets/avatar.png';
+    }
   }
 }
 </script>
