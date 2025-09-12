@@ -254,8 +254,7 @@ export default {
     handleAddTask() {
       this.showModalAddTask = true
     },
-    addTaskSuccess(data) {
-      this.taskStore.addTask(data)
+    addTaskSuccess() {
       this.showModalAddTask = false
     },
     // Task actions are now handled in TaskCard component

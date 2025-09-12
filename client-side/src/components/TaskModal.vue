@@ -199,6 +199,7 @@
 import { watch, onMounted } from 'vue'
 import { taskService } from '@/services/task-service'
 import { useTaskModal } from '@/composables/useTaskModal'
+import { useTaskStore } from '@/stores/task'
 
 const props = defineProps({
     modelValue: { type: Boolean, required: true },
@@ -206,7 +207,7 @@ const props = defineProps({
     id: { type: [String, Number], default: null }
 })
 const emit = defineEmits(['update:modelValue', 'taskAdded', 'taskUpdated'])
-
+const taskStore = useTaskStore()
 const {
     state,
     fileInput,
@@ -304,6 +305,7 @@ const handleSubmit = async () => {
                 }
 
                 showToastNotification(successMessage)
+                taskStore.updateTask(taskId, response.data)
                 emit('taskUpdated', response.data)
             } else {
                 state.errorMessage = response.error || 'Failed to update task'
@@ -326,6 +328,7 @@ const handleSubmit = async () => {
                 }
 
                 showToastNotification(successMessage)
+                taskStore.addTask(response.data)
                 emit('taskAdded', response.data)
             } else {
                 state.errorMessage = response.error || 'Failed to create task'

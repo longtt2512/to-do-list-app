@@ -53,7 +53,12 @@
           {{ task.description || 'No description available' }}
         </p>
       </div>
-      <img :src="task.image || '/src/assets/avatar.png'" :alt="task.title" class="w-[88px] h-[88px] rounded-xl overflow-hidden object-cover mt-5">
+      <img 
+        :src="currentImageSrc" 
+        :alt="task.title" 
+        class="w-[88px] h-[88px] rounded-xl overflow-hidden object-cover mt-5"
+        @error="handleImageError"
+      >
     </div>
 
     <!-- Bottom Section - Metadata -->
@@ -83,7 +88,6 @@
       v-model="showModalAddTask" 
       :task="task" 
       :id="taskSelected" 
-      @taskAdded="handleTaskAdded" 
       @taskUpdated="handleTaskUpdated" 
     />
     
@@ -106,6 +110,7 @@ import { useRouter } from 'vue-router'
 import TaskModal from './TaskModal.vue'
 import Confirm from './Comfirm.vue'
 
+
 export default {
   name: 'TaskCard',
   components: { TaskModal, Confirm },
@@ -127,6 +132,7 @@ export default {
         taskSelected: null,
         showConfirm: false,
         loadingDelete: false,
+        currentImageSrc: this.task.imageKey || '/src/assets/avatar.png',
       };
   },
   computed: {
@@ -208,22 +214,11 @@ export default {
       // this.router.push(`/tasks/${this.task.id}`);
     },
 
-    // Xử lý khi task được thêm mới (không cần thiết trong TaskCard nhưng giữ để tương thích)
-    async handleTaskAdded() {
-      this.showModalAddTask = false;
-      this.taskSelected = null;
-      // Store đã được cập nhật tự động, không cần làm gì thêm
-    },
-
     // Xử lý khi task được cập nhật
-    async handleTaskUpdated(dataEdited) {
+    async handleTaskUpdated() {
       this.showModalAddTask = false;
       this.taskSelected = null;
 
-      // Cập nhật task trong store
-      this.taskStore.updateTask(dataEdited.id, dataEdited);
-
-      // Store đã được cập nhật tự động, không cần làm gì thêm
     },
     getStatusBorderClasses(status) {
       const classes = {
@@ -284,6 +279,11 @@ export default {
         month: '2-digit',
         year: 'numeric'
       });
+    },
+
+    // Xử lý lỗi ảnh - chuyển sang ảnh mặc định
+    handleImageError() {
+      this.currentImageSrc = '/src/assets/avatar.png';
     }
   }
 }
