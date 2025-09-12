@@ -27,7 +27,7 @@
 
         <span class="text-[10px] text-[#A1A3AB]">Completed 2 days ago.</span>
       </div>
-      <img :src="task.image || '/src/assets/avatar.png'" :alt="task.title"
+      <img :src="currentImageSrc" :alt="task.title" @error="handleImageError"
         class="w-[88px] h-[88px] rounded-xl overflow-hidden object-cover mt-5">
     </div>
   </div>
@@ -37,6 +37,11 @@
 export default {
   name: 'TaskCard',
   props: ['task'],
+  data() {
+    return {
+      currentImageSrc: this.task.imageKey || '/src/assets/avatar.png',
+    }
+  },
   methods: {
     getStatusClasses(status) {
       const classes = {
@@ -85,6 +90,10 @@ export default {
         month: '2-digit',
         year: 'numeric'
       });
+    },
+
+    handleImageError() {
+      this.currentImageSrc = '/src/assets/avatar.png';
     }
   }
 }
