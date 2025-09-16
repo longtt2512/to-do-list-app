@@ -167,30 +167,51 @@ export const useTaskStore = defineStore('task', {
 
     // Cập nhật task
     async updateTask(id, taskData) {
-      // Không cần gọi API updateTask, chỉ update trực tiếp taskData vào list
-
+      // Gọi lại task theo id từ API, sau đó mới update vào list
       try {
-        // Cập nhật task trong list bằng taskData truyền vào
-        const index = this.tasks.findIndex(task => task.id === id)
-        if (index !== -1) {
-          this.tasks[index] = { ...this.tasks[index], ...taskData }
-        }
+        // Gọi API lấy task mới nhất theo id
+        const result = await taskService.getTaskById(id)
+        if (result && result.success && result.data) {
+          // Cập nhật task trong list bằng dữ liệu mới nhất từ API
+          const index = this.tasks.findIndex(task => task.id === id)
+          if (index !== -1) {
+            this.tasks[index] = result.data
+          }
 
-        // Cập nhật currentTask nếu đang xem task này
-        if (this.currentTask && this.currentTask.id === id) {
-          this.currentTask = { ...this.currentTask, ...taskData }
-        }
+          // Cập nhật currentTask nếu đang xem task này
+          if (this.currentTask && this.currentTask.id === id) {
+            this.currentTask = result.data
+          }
 
-        return { ...taskData, id }
+          return result.data
+        } else {
+          this.error = (result && result.error) || 'Failed to update task'
+          return null
+        }
       } catch (error) {
         this.error = error.message || 'Failed to update task'
         return null
       }
     },
 
-    addTask(data) {
-      this.tasks.unshift(data)
-      this.currentTask = data
+    async addTask(data) {
+      // Gọi lại task theo id từ API, sau đó mới update vào list
+      try {
+        const result = await taskService.getTaskById(data.id)
+        if (result && result.success && result.data) {
+          // Thêm task mới vào đầu list
+          this.tasks.unshift(result.data)
+          this.currentTask = result.data
+        } else {
+          // Nếu không lấy được task từ API, fallback dùng data truyền vào
+          this.tasks.unshift(data)
+          this.currentTask = data
+        }
+      } catch (error) {
+        // Nếu có lỗi, fallback dùng data truyền vào
+        this.tasks.unshift(data)
+        this.currentTask = data
+      }
     },
     // Xóa task
     async deleteTask(id) {
