@@ -174,7 +174,7 @@ public class TaskServiceImpl implements TaskService {
         t.getTitle(),
         t.getStartDate(),
         t.getDescription(),
-        t.getImageKey(),
+        StringUtils.hasText(t.getImageKey()) ? files.presignGet(t.getImageKey(), Duration.ofMinutes(300)).toString() : null,
         sels,
         t.getCreatedAt(),
         t.getUpdatedAt(),
