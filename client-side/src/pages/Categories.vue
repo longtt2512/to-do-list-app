@@ -7,7 +7,7 @@
                 <div class="flex items-center space-x-3">
                     <button
                         @click="goBack"
-                        class="text-gray-600 hover:text-gray-800 transition-colors text-sm"
+                        class="text-[#FF6767] underline font-medium"
                     >
                         Go Back
                     </button>
@@ -15,6 +15,11 @@
             </div>
 
             <div class="p-6">
+                <!-- Error Message -->
+                <div v-if="errorMessage" class="mb-4 text-red-600 text-sm font-medium bg-red-50 border border-red-200 rounded px-4 py-2">
+                    {{ errorMessage }}
+                </div>
+
                 <!-- Add Category Button -->
                 <router-link :to="{ name: 'add-category' }"
                              class="bg-button-primary text-white px-4 py-3 rounded text-sm font-medium transition-colors mb-6">
@@ -33,10 +38,25 @@
                             <div class="flex items-center space-x-3">
                                 <router-link
                                     :to="{ name: 'edit-category', params: { id: category.id } }"
-                                    class="text-orange-500 hover:text-orange-600 text-sm transition-colors"
+                                    class="inline-flex items-center text-orange-500 hover:text-orange-600 text-sm font-medium transition-colors underline underline-offset-2"
                                 >
-                                    + Edit {{ category.categoryName }}
+                                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536M9 13l6.536-6.536a2 2 0 112.828 2.828L11.828 15.828a2 2 0 01-2.828 0L9 13z"/>
+                                    </svg>
+                                    Edit
                                 </router-link>
+                                <!-- Delete Category Button as text style, hidden for 'status' and 'priority' -->
+                                <button
+                                    v-if="category.categoryName !== 'status' && category.categoryName !== 'priority'"
+                                    @click="openDeleteCategoryModal(category.id, category.categoryName)"
+                                    class="inline-flex items-center text-red-500 hover:text-red-600 text-sm font-medium transition-colors underline underline-offset-2"
+                                    style="background: none; border: none; padding: 0;"
+                                >
+                                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+                                    </svg>
+                                    Delete
+                                </button>
                             </div>
                         </div>
 
@@ -175,15 +195,15 @@
                 </div>
             </div>
             
-            <!-- Task Buttons -->
-            <div class="p-6 border-t border-gray-200">
-                <div class="flex space-x-4">
-                    <AddTaskButton />
-                    <EditTaskButton 
-                        task-id="98bbc0af-bbef-42fd-b8d3-0fe3723690eb"
-                    />
-                </div>
-            </div>
+<!--            &lt;!&ndash; Task Buttons &ndash;&gt;-->
+<!--            <div class="p-6 border-t border-gray-200">-->
+<!--                <div class="flex space-x-4">-->
+<!--                    <AddTaskButton />-->
+<!--                    <EditTaskButton -->
+<!--                        task-id="98bbc0af-bbef-42fd-b8d3-0fe3723690eb"-->
+<!--                    />-->
+<!--                </div>-->
+<!--            </div>-->
             
         </div>
     </div>
@@ -218,6 +238,8 @@ const deleteModal = ref({
     itemId: 0
 })
 
+const errorMessage = ref('')
+
 onMounted(async () => {
     await loadCategories()
 })
@@ -236,9 +258,12 @@ const loadCategories = async () => {
                 })
             )
             emit('categoriesUpdated', categories.value)
+            errorMessage.value = ''
+        } else {
+            errorMessage.value = response.error || 'Failed to load categories.'
         }
     } catch (err) {
-        console.error('Error loading categories:', err)
+        errorMessage.value = 'Error loading categories.'
     }
 }
 
@@ -282,12 +307,16 @@ const saveInlineEdit = async () => {
     try {
         const categoryResponse = await categoryService.getCategoryById(editingInlineItem.value.categoryId)
         if (!categoryResponse.success) {
-            throw new Error('Failed to get category data')
+            errorMessage.value = categoryResponse.error || 'Failed to get category data'
+            editingInlineItem.value.newValue = editingInlineItem.value.originalValue
+            return
         }
 
         const category = categories.value.find(c => c.id === editingInlineItem.value.categoryId)
         if (!category) {
-            throw new Error('Category not found')
+            errorMessage.value = 'Category not found'
+            editingInlineItem.value.newValue = editingInlineItem.value.originalValue
+            return
         }
 
         const updatedItems = categoryResponse.data.map(item => {
@@ -320,14 +349,15 @@ const saveInlineEdit = async () => {
             }
             
             emit('categoriesUpdated', categories.value)
+            errorMessage.value = ''
             cancelInlineEdit()
         } else {
             editingInlineItem.value.newValue = editingInlineItem.value.originalValue
-            console.error('Failed to update item:', response.error)
+            errorMessage.value = response.error || 'Failed to update item.'
         }
     } catch (error) {
         editingInlineItem.value.newValue = editingInlineItem.value.originalValue
-        console.error('Error updating item:', error)
+        errorMessage.value = 'Error updating item.'
     }
 }
 
@@ -346,6 +376,17 @@ const openDeleteItemModal = (categoryId, itemId) => {
     }
 }
 
+// Add this function for category deletion
+const openDeleteCategoryModal = (categoryId, categoryName) => {
+    deleteModal.value = {
+        message: `Delete category "${categoryName}" and all its items?`,
+        type: 'category',
+        categoryId,
+        itemId: 0
+    }
+    showDeleteModal.value = true
+}
+
 const closeDeleteModal = () => {
     showDeleteModal.value = false
     deleteModal.value = {
@@ -361,14 +402,14 @@ const confirmDelete = async () => {
         if (deleteModal.value.type === 'item') {
             const categoryResponse = await categoryService.getCategoryById(deleteModal.value.categoryId)
             if (!categoryResponse.success) {
-                console.error('Failed to get category data:', categoryResponse.error)
+                errorMessage.value = categoryResponse.error || 'Failed to get category data.'
                 closeDeleteModal()
                 return
             }
 
             const category = categories.value.find(c => c.id === deleteModal.value.categoryId)
             if (!category) {
-                console.error('Category not found in local data')
+                errorMessage.value = 'Category not found in local data.'
                 closeDeleteModal()
                 return
             }
@@ -396,13 +437,25 @@ const confirmDelete = async () => {
                     }
                 }
                 emit('categoriesUpdated', categories.value)
+                errorMessage.value = ''
             } else {
-                console.error('Failed to delete item:', response.error)
+                errorMessage.value = response.error || 'Failed to delete item.'
+            }
+        }
+        // Handle category deletion
+        else if (deleteModal.value.type === 'category') {
+            const response = await categoryService.deleteCategory(deleteModal.value.categoryId)
+            if (response.success) {
+                categories.value = categories.value.filter(c => c.id !== deleteModal.value.categoryId)
+                emit('categoriesUpdated', categories.value)
+                errorMessage.value = ''
+            } else {
+                errorMessage.value = response.error || 'Failed to delete category.'
             }
         }
         closeDeleteModal()
     } catch (err) {
-        console.error('Error in confirmDelete:', err)
+        errorMessage.value = 'Error in delete operation.'
         closeDeleteModal()
     }
 }

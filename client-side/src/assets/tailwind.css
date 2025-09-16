@@ -18,7 +18,7 @@
     --text-primary: #000000;
     --text-secondary: #6b7280;
     --primary-button-color: #F24E1E;
-    --primary-button-hover-color: #ff3f00;
+    --primary-button-hover-color: #fb5b5b;
   }
   
   html {
@@ -83,7 +83,7 @@ body {
   }
 
     .bg-button-primary {
-        background-color: var(--primary-button-color);
+        background-color: var(--primary-color);
     }
 
     .bg-button-primary:hover {

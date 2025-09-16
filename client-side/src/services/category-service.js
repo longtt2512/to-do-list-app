@@ -1,4 +1,4 @@
-import { get, post, put } from './base-api.js'
+import {del, get, post, put} from './base-api.js'
 
 const API_URL = '/api/task-categories'
 
@@ -68,6 +68,23 @@ export const categoryService = {
                 success: false,
                 data: null,
                 error: error.message || 'Failed to update category'
+            }
+        }
+    },
+
+    async deleteCategory(id) {
+        try {
+            const res = await del(`${API_URL}/${id}`)
+            return {
+                success: true,
+                data: res,
+                error: null
+            }
+        } catch (error) {
+            return {
+                success: false,
+                data: null,
+                error: error.message || 'Failed to delete category'
             }
         }
     },

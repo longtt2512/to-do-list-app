@@ -6,7 +6,7 @@
                 <h1 class="text-lg font-medium text-gray-900">Add New Category</h1>
                 <button
                     @click="goBack"
-                    class="text-gray-600 hover:text-gray-800 transition-colors text-sm"
+                    class="text-[#FF6767] underline font-medium"
                 >
                     Go Back
                 </button>
@@ -15,6 +15,10 @@
             <!-- Add Form -->
             <div class="bg-white shadow rounded-lg p-6 mb-6">
                 <div class="space-y-4">
+                    <!-- Error Message -->
+                    <div v-if="form.error" class="mb-4 text-red-600 text-sm font-medium bg-red-50 border border-red-200 rounded px-4 py-2">
+                        {{ form.error }}
+                    </div>
                     <!-- Category Name -->
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Category Name</label>
@@ -60,9 +64,6 @@
                             + Add Value
                         </button>
                     </div>
-
-                    <!-- Error -->
-                    <p v-if="form.error" class="text-red-500 text-sm">{{ form.error }}</p>
                 </div>
 
                 <!-- Actions -->
