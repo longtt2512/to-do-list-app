@@ -171,13 +171,13 @@ export default {
     },
     getStatusBorderClasses(status) {
       const classes = {
-        'not-started': 'border-gray-300',
-        'in-progress': 'border-blue-300',
-        'completed': 'border-green-300',
-        'overdue': 'border-red-300',
-        'pending': 'border-yellow-300'
+        'not-started': 'border-gray-600',
+        'in-progress': 'border-blue-600',
+        'completed': 'border-green-600',
+        'overdue': 'border-red-600',
+        'pending': 'border-yellow-600'
       };
-      return classes[status] || 'border-gray-300';
+      return classes[status] || 'border-gray-600';
     },
 
     getStatusClasses(status) {

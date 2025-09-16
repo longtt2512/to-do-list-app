@@ -10,6 +10,7 @@ import Login from '../pages/Login.vue'
 import Register from '../pages/Register.vue'
 import AddCategory from "@/pages/AddCategory.vue"
 import EditCategory from "@/pages/EditCategory.vue"
+import Help from "@/pages/Help.vue"
 
 const routes = [
   {
@@ -23,6 +24,7 @@ const routes = [
       { path: '/categories/edit/:id', component: EditCategory, name: 'edit-category', meta: { authenticated: true } },
       { path: '/account', component: Account, meta: { authenticated: true } },
       { path: '/account/change-password', component: Account, meta: { authenticated: true } },
+      { path: '/help', component: Help, meta: { authenticated: true } },
     ]
   },
   {
