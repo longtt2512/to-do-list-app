@@ -47,6 +47,18 @@ const createApiClient = () => {
   client.interceptors.response.use(
     (response) => response.data,
     (error) => {
+      // Handle 401 status code - clear tokens and redirect to login
+      if (error.response?.status === 401) {
+        // Clear tokens from localStorage
+        localStorage.removeItem('accessToken')
+        localStorage.removeItem('refreshToken')
+        
+        // Redirect to login page
+        window.location.href = '/login'
+        
+        return Promise.reject(new Error('Unauthorized - Session expired'))
+      }
+      
       const message = error.response?.data?.message || error.message || 'An error occurred'
       return Promise.reject(new Error(message))
     }
